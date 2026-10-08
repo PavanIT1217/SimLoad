@@ -1,10 +1,9 @@
-import { KIND_LABELS, perInstanceCapacity } from '@syssim/engine';
-import type { AutoscaleConfig, DesignNode } from '@syssim/engine';
+import { KIND_LABELS } from '@syssim/engine';
+import type { DesignNode } from '@syssim/engine';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';
 import { useUiStore } from '../../state/uiStore';
 import { Button } from '../../ui/Button';
-import { Field, NumberInput, Toggle } from '../../ui/Field';
 import { formatCompact, formatMs, formatPct, formatRps } from '../../ui/format';
 import { HEALTH_LABEL, healthOf } from '../../ui/health';
 import { KindIcon } from '../../ui/KindIcon';
@@ -12,7 +11,7 @@ import { Section, Stat } from '../../ui/Section';
 import { CalibrationPanel } from './CalibrationPanel';
 import { ChaosActions } from './ChaosActions';
 import { Equations } from './Equations';
-import { fieldsFor, supportsAutoscale } from './fields';
+import { AutoscaleSection, ConfigSections } from './ConfigSections';
 
 export interface NodeInspectorProps {
   node: DesignNode;
@@ -55,6 +54,19 @@ function LiveStats({ nodeId }: { nodeId: string }) {
           tone={live.retryRps > 0 ? 'warn' : undefined}
         />
         <Stat label="Instances" value={live.instances} />
+        {live.shedRps > 0 && (
+          <Stat label="Shed (rate limit)" value={formatRps(live.shedRps)} tone="warn" />
+        )}
+        {live.breaker !== 'closed' && (
+          <Stat
+            label="Circuit breaker"
+            value={live.breaker === 'open' ? 'Open' : 'Half-open'}
+            tone="bad"
+          />
+        )}
+        {live.coldFraction > 0 && (
+          <Stat label="Cold instances" value={formatPct(live.coldFraction, 0)} tone="warn" />
+        )}
       </div>
     </>
   );
@@ -62,13 +74,9 @@ function LiveStats({ nodeId }: { nodeId: string }) {
 
 export function NodeInspector({ node }: NodeInspectorProps) {
   const updateNode = useDesignStore((s) => s.updateNode);
-  const updateNodeConfig = useDesignStore((s) => s.updateNodeConfig);
   const removeNode = useDesignStore((s) => s.removeNode);
   const mode = useUiStore((s) => s.mode);
   const live = useSimStore((s) => s.latest?.nodes[node.id]);
-  const autoscale = node.config.autoscale;
-  const setAutoscale = (patch: Partial<AutoscaleConfig>) =>
-    updateNodeConfig(node.id, { autoscale: { ...autoscale, ...patch } });
 
   return (
     <div className="inspector-content">
@@ -100,74 +108,8 @@ export function NodeInspector({ node }: NodeInspectorProps) {
 
       {mode === 'validation' && <CalibrationPanel key={node.id} node={node} />}
 
-      <Section title="Configuration">
-        <div className="field-grid">
-          {fieldsFor(node.kind).map((f) => (
-            <Field key={f.key} label={f.label} hint={f.hint}>
-              <NumberInput
-                value={node.config[f.key]}
-                min={f.min}
-                max={f.max}
-                step={f.step}
-                scale={f.scale}
-                ariaLabel={f.label}
-                onChange={(v) => updateNodeConfig(node.id, { [f.key]: v })}
-              />
-            </Field>
-          ))}
-        </div>
-        {node.kind !== 'client' && node.kind !== 'queue' && (
-          <p className="muted small">
-            Effective capacity: {formatRps(perInstanceCapacity(node.config))} per instance (the
-            lower of capacity and pool size ÷ latency).
-          </p>
-        )}
-      </Section>
-
-      {supportsAutoscale(node.kind) && (
-        <Section title="Autoscaling">
-          <Toggle
-            label="Autoscale on load"
-            checked={autoscale.enabled}
-            onChange={(enabled) => setAutoscale({ enabled })}
-          />
-          {autoscale.enabled && (
-            <div className="field-grid">
-              <Field label="Boot delay (s)" hint="Time before new instances take traffic">
-                <NumberInput
-                  value={autoscale.delayMs}
-                  scale={0.001}
-                  min={0}
-                  onChange={(delayMs) => setAutoscale({ delayMs })}
-                />
-              </Field>
-              <Field label="Target utilization (%)">
-                <NumberInput
-                  value={autoscale.targetUtilization}
-                  scale={100}
-                  min={0.05}
-                  max={1}
-                  onChange={(targetUtilization) => setAutoscale({ targetUtilization })}
-                />
-              </Field>
-              <Field label="Min instances">
-                <NumberInput
-                  value={autoscale.minInstances}
-                  min={1}
-                  onChange={(minInstances) => setAutoscale({ minInstances })}
-                />
-              </Field>
-              <Field label="Max instances">
-                <NumberInput
-                  value={autoscale.maxInstances}
-                  min={1}
-                  onChange={(maxInstances) => setAutoscale({ maxInstances })}
-                />
-              </Field>
-            </div>
-          )}
-        </Section>
-      )}
+      <ConfigSections node={node} />
+      <AutoscaleSection node={node} />
     </div>
   );
 }

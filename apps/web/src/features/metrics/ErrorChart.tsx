@@ -3,6 +3,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -10,11 +11,13 @@ import {
 } from 'recharts';
 import { formatPct } from '../../ui/format';
 import { ChartCard } from './ChartCard';
+import { useReplayTime } from './useReplayTime';
 import { useChartHistory } from './useChartHistory';
 import { AXIS_PROPS, GRID_PROPS, LINE_PROPS, TOOLTIP_PROPS, timeTick } from './chartTheme';
 
 function ErrorChartView() {
   const history = useChartHistory();
+  const replayT = useReplayTime();
   const last = history[history.length - 1];
   const chart = useMemo(
     () => (
@@ -28,6 +31,9 @@ function ErrorChartView() {
             domain={[0, (max: number) => Math.max(0.01, max)]}
             tickFormatter={(v: number) => formatPct(v, 0)}
           />
+          {replayT !== null && (
+            <ReferenceLine x={replayT} stroke="var(--accent-2)" strokeWidth={1.5} />
+          )}
           <Tooltip {...TOOLTIP_PROPS} formatter={(v) => formatPct(Number(v), 2)} />
           <Area
             {...LINE_PROPS}
@@ -39,7 +45,7 @@ function ErrorChartView() {
         </AreaChart>
       </ResponsiveContainer>
     ),
-    [history],
+    [history, replayT],
   );
   return (
     <ChartCard title="Error rate" value={last ? formatPct(last.errorRate, 2) : undefined}>

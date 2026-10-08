@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useSimStore } from '../../state/simStore';
 import { useUiStore } from '../../state/uiStore';
 import { Button } from '../../ui/Button';
-import { formatMs, formatPct } from '../../ui/format';
+import { formatMs, formatPct, formatUsd } from '../../ui/format';
 import { findScenario } from './index';
 import { loadScenario } from './loadScenario';
 import './scenarios.css';
@@ -34,7 +34,9 @@ export function GoalBanner() {
             <span key={c.label} className={c.ok ? 'is-ok' : 'is-bad'}>
               {c.label.startsWith('p99')
                 ? `p99 ${formatMs(c.actual)}`
-                : `err ${formatPct(c.actual, 2)}`}
+                : c.label.startsWith('Monthly')
+                  ? `${formatUsd(c.actual)}/mo`
+                  : `err ${formatPct(c.actual, 2)}`}
             </span>
           ))}
         </span>

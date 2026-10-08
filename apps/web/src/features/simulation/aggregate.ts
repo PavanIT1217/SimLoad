@@ -1,5 +1,5 @@
 import type { TickResult } from '@syssim/engine';
-import type { ChartPoint } from './protocol';
+import type { ChartPoint, NodeSnapshot } from './protocol';
 
 /** Averages a batch of ticks into one chart point. */
 export function toChartPoint(ticks: readonly TickResult[]): ChartPoint | null {
@@ -28,5 +28,22 @@ export function toChartPoint(ticks: readonly TickResult[]): ChartPoint | null {
     p95: last.latency.p95,
     p99: last.latency.p99,
     util,
+    nodes: snapshot(last),
   };
+}
+
+function snapshot(tick: TickResult): Record<string, NodeSnapshot> {
+  const out: Record<string, NodeSnapshot> = {};
+  for (const [id, n] of Object.entries(tick.nodes)) {
+    out[id] = {
+      i: n.inflowRps,
+      s: n.saturation,
+      q: n.queueDepth,
+      w: n.latencyMs,
+      n: n.instances,
+      f: n.failed ? 1 : 0,
+      ok: n.successRate,
+    };
+  }
+  return out;
 }

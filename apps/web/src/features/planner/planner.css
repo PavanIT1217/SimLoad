@@ -1,0 +1,58 @@
+.plan-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.plan-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--accent);
+}
+.plan-spinner {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--accent);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: plan-spin 0.8s linear infinite;
+}
+@keyframes plan-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.plan-eval {
+  display: grid;
+  grid-template-columns: 52px 1fr 1fr 1fr;
+  gap: 6px;
+  align-items: baseline;
+  padding: 5px 8px;
+  border-left: 2px solid var(--bad);
+  background: var(--bg-sunken);
+  font-size: 11px;
+}
+.plan-eval.is-pass {
+  border-left-color: var(--ok);
+}
+.plan-eval-title {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.plan-changes {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.plan-to {
+  color: var(--accent);
+  font-weight: 600;
+}

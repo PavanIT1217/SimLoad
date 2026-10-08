@@ -4,11 +4,11 @@ import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
 import { memo } from 'react';
 import { useDesignStore } from '../../state/designStore';
-import { useSimStore } from '../../state/simStore';
 import { formatCompact, formatMs } from '../../ui/format';
 import { HEALTH_LABEL, healthOf } from '../../ui/health';
 import { KindIcon } from '../../ui/KindIcon';
 import { Gauge } from './Gauge';
+import { useNodeView } from './useNodeView';
 
 export type SystemNodeData = Record<string, never>;
 export type SystemFlowNode = Node<SystemNodeData, 'system'>;
@@ -27,7 +27,7 @@ const KIND_CODE: Record<ComponentKind, string> = {
 
 function SystemNodeView({ id, selected }: NodeProps<SystemFlowNode>) {
   const node = useDesignStore((s) => s.design.nodes.find((n) => n.id === id));
-  const live = useSimStore((s) => s.latest?.nodes[id]);
+  const live = useNodeView(id);
   if (!node) return null;
 
   const health = live ? healthOf(live.saturation, live.queueDepth, live.failed) : 'idle';

@@ -293,3 +293,53 @@ input[type='range'] {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* ---------- Tabs ---------- */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-sunken);
+  flex: none;
+}
+.tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 6px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.tab:last-child {
+  border-right: 0;
+}
+.tab:hover {
+  color: var(--accent-strong);
+  background: var(--surface-hover);
+}
+.tab.is-active {
+  color: var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent);
+  background: var(--surface);
+}
+.tab:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: -2px;
+}
+.tab-badge {
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: 2px;
+  background: var(--bad);
+  color: #fff;
+  font-size: 9px;
+  letter-spacing: 0;
+}

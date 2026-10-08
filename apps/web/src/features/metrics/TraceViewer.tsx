@@ -12,6 +12,7 @@ const OUTCOME_LABEL: Record<SpanOutcome, string> = {
   timeout: 'timeout',
   error: 'error',
   unavailable: 'unavailable',
+  rejected: 'circuit open',
 };
 
 function TraceWaterfall({ trace }: { trace: RequestTrace }) {

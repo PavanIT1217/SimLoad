@@ -13,7 +13,7 @@ export function Inspector() {
     selection?.type === 'edge' ? s.design.edges.find((e) => e.id === selection.id) : undefined,
   );
   return (
-    <aside className="inspector" aria-label="Inspector">
+    <div className="inspector">
       {node ? (
         <NodeInspector node={node} />
       ) : edge ? (
@@ -21,6 +21,6 @@ export function Inspector() {
       ) : (
         <DesignOverview />
       )}
-    </aside>
+    </div>
   );
 }

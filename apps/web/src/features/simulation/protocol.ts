@@ -20,6 +20,26 @@ export interface ChartPoint {
   p99: number;
   /** Utilisation (0..1+) per node id (saturation, so overload shows above 1). */
   util: Record<string, number>;
+  /** Compact per-node state at the end of this point, for replay. */
+  nodes: Record<string, NodeSnapshot>;
+}
+
+/** Just enough of a node's state to redraw it on the canvas during replay. */
+export interface NodeSnapshot {
+  /** Inflow (req/s). */
+  i: number;
+  /** Saturation ρ. */
+  s: number;
+  /** Queue depth. */
+  q: number;
+  /** Local latency (ms). */
+  w: number;
+  /** Instances. */
+  n: number;
+  /** 1 when failed. */
+  f: 0 | 1;
+  /** End-to-end success rate. */
+  ok: number;
 }
 
 /** Messages from the UI thread to the simulation worker. */

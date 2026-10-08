@@ -1,4 +1,5 @@
-import type { DesignEdge } from '@syssim/engine';
+import { edgeCarries } from '@syssim/engine';
+import type { DesignEdge, EdgeTraffic } from '@syssim/engine';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';
 import { Button } from '../../ui/Button';
@@ -13,7 +14,9 @@ export interface EdgeInspectorProps {
 export function EdgeInspector({ edge }: EdgeInspectorProps) {
   const nodes = useDesignStore((s) => s.design.nodes);
   const edges = useDesignStore((s) => s.design.edges);
-  const siblings = edges.filter((e) => e.source === edge.source);
+  // Share within the class this edge carries (reads for 'all' edges).
+  const cls = edge.traffic === 'write' ? 'write' : 'read';
+  const siblings = edges.filter((e) => e.source === edge.source && edgeCarries(e, cls));
   const updateEdge = useDesignStore((s) => s.updateEdge);
   const removeEdge = useDesignStore((s) => s.removeEdge);
   const rps = useSimStore((s) => s.latest?.edges[edge.id] ?? 0);
@@ -34,7 +37,21 @@ export function EdgeInspector({ edge }: EdgeInspectorProps) {
         </Button>
       </header>
       <Section title="Routing">
-        <Field label="Weight" hint="Relative share of the source's outgoing traffic">
+        <Field label="Carries" hint="Route only reads or only writes along this edge (CQRS-style)">
+          <select
+            className="input"
+            value={edge.traffic ?? 'all'}
+            onChange={(e) => updateEdge(edge.id, { traffic: e.target.value as EdgeTraffic })}
+          >
+            <option value="all">All requests</option>
+            <option value="read">Reads only</option>
+            <option value="write">Writes only</option>
+          </select>
+        </Field>
+        <Field
+          label="Weight"
+          hint="Relative share of the source's outgoing traffic of the same class"
+        >
           <NumberInput
             value={edge.weight}
             min={0.01}

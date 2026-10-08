@@ -4,6 +4,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -11,6 +12,7 @@ import {
 } from 'recharts';
 import { formatRps } from '../../ui/format';
 import { ChartCard } from './ChartCard';
+import { useReplayTime } from './useReplayTime';
 import { useChartHistory } from './useChartHistory';
 import {
   AXIS_PROPS,
@@ -25,6 +27,7 @@ import {
 
 function ThroughputChartView() {
   const history = useChartHistory();
+  const replayT = useReplayTime();
   const last = history[history.length - 1];
   const chart = useMemo(
     () => (
@@ -33,6 +36,9 @@ function ThroughputChartView() {
           <CartesianGrid {...GRID_PROPS} />
           <XAxis dataKey="t" {...AXIS_PROPS} tickFormatter={timeTick} minTickGap={24} />
           <YAxis {...AXIS_PROPS} width={52} tickFormatter={compactTick} />
+          {replayT !== null && (
+            <ReferenceLine x={replayT} stroke="var(--accent-2)" strokeWidth={1.5} />
+          )}
           <Tooltip {...TOOLTIP_PROPS} formatter={(v) => formatRps(Number(v))} />
           <Legend {...LEGEND_PROPS} />
           <Line
@@ -46,7 +52,7 @@ function ThroughputChartView() {
         </LineChart>
       </ResponsiveContainer>
     ),
-    [history],
+    [history, replayT],
   );
   return (
     <ChartCard title="Goodput vs λ" value={last ? formatRps(last.throughput) : undefined}>

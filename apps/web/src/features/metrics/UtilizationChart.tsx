@@ -14,6 +14,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useDesignStore } from '../../state/designStore';
 import { formatPct } from '../../ui/format';
 import { ChartCard } from './ChartCard';
+import { useReplayTime } from './useReplayTime';
 import { useChartHistory } from './useChartHistory';
 import {
   AXIS_PROPS,
@@ -30,6 +31,7 @@ const MAX_SERIES = SERIES.length;
 
 function UtilizationChartView() {
   const history = useChartHistory();
+  const replayT = useReplayTime();
   // Only ids and labels matter here; dragging nodes around must not redraw the chart.
   const series = useDesignStore(
     useShallow((s) =>
@@ -60,6 +62,9 @@ function UtilizationChartView() {
             tickFormatter={(v: number) => formatPct(v, 0)}
           />
           <ReferenceLine y={1} stroke="var(--bad)" strokeDasharray="3 3" />
+          {replayT !== null && (
+            <ReferenceLine x={replayT} stroke="var(--accent-2)" strokeWidth={1.5} />
+          )}
           <Tooltip {...TOOLTIP_PROPS} formatter={(v) => formatPct(Number(v), 0)} />
           <Legend {...LEGEND_PROPS} />
           {tracked.map((n, i) => (
@@ -74,7 +79,7 @@ function UtilizationChartView() {
         </LineChart>
       </ResponsiveContainer>
     ),
-    [history, tracked],
+    [history, tracked, replayT],
   );
   return (
     <ChartCard title="Utilization per node" value={hidden > 0 ? `+${hidden} not shown` : undefined}>

@@ -1,7 +1,8 @@
+import { estimateCost } from '@syssim/engine';
 import { memo } from 'react';
 import { useDesignStore } from '../state/designStore';
 import { useSimStore } from '../state/simStore';
-import { formatCompact, formatMs, formatPct } from '../ui/format';
+import { formatCompact, formatMs, formatPct, formatUsd } from '../ui/format';
 
 interface ReadoutProps {
   symbol: string;
@@ -25,7 +26,8 @@ function Readout({ symbol, label, value, tone }: ReadoutProps) {
 /** System-wide telemetry: the numbers an operator watches first. */
 function TelemetryStripView() {
   const latest = useSimStore((s) => s.latest);
-  const nodes = useDesignStore((s) => s.design.nodes);
+  const design = useDesignStore((s) => s.design);
+  const nodes = design.nodes;
   let bottleneck: { label: string; rho: number } | null = null;
   for (const state of Object.values(latest?.nodes ?? {})) {
     if (state.kind === 'client') continue;
@@ -35,6 +37,7 @@ function TelemetryStripView() {
     }
   }
   const err = latest?.errorRate ?? 0;
+  const cost = estimateCost(design, latest).totalMonthly;
   const rho = bottleneck?.rho ?? 0;
   return (
     <div className="telemetry" role="status" aria-label="System telemetry">
@@ -60,6 +63,7 @@ function TelemetryStripView() {
         value={`${formatCompact(latest?.retryRps ?? 0)}/s`}
         tone={(latest?.retryRps ?? 0) > 0 ? 'warn' : undefined}
       />
+      <Readout symbol="$" label="Cost / month" value={formatUsd(cost)} />
       <Readout
         symbol="ρ"
         label={`Bottleneck${bottleneck ? ` · ${bottleneck.label}` : ''}`}

@@ -176,7 +176,7 @@
 /* ---------- Telemetry strip ---------- */
 .telemetry {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(9, minmax(0, 1fr));
   border-bottom: 1px solid var(--border);
   background: var(--bg-sunken);
 }
@@ -244,8 +244,17 @@
   min-height: 0;
   overflow: hidden;
 }
-.workspace > .palette,
-.workspace > .inspector {
+.workspace > .palette {
+  overflow-y: auto;
+}
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+}
+.right-panel-body {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 /* While dragging a splitter: no transitions, no text selection, steady cursor. */
@@ -342,8 +351,7 @@
   opacity: 1;
   box-shadow: var(--glow);
 }
-.workspace > .palette,
-.workspace > .inspector {
+.workspace > .palette {
   background: var(--bg-elevated);
 }
 
@@ -368,8 +376,7 @@
   justify-content: center;
   padding: 6px;
 }
-.app > .metrics {
-  background: var(--bg-sunken);
+.app > .metrics-dock {
   min-height: 0;
   overflow: hidden;
 }
@@ -431,14 +438,14 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto 0 60vh 0 auto;
   }
-  .app > .metrics {
+  .app > .metrics-dock {
     max-height: none;
   }
   .workspace > .palette {
     border-right: 0;
     border-bottom: 1px solid var(--border);
   }
-  .workspace > .inspector {
+  .workspace > .right-panel {
     border-left: 0;
     border-top: 1px solid var(--border);
   }

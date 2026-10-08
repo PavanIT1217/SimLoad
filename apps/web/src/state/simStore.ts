@@ -19,6 +19,9 @@ export interface SimState {
   traces: RequestTrace[];
   goal: GoalStatus | null;
   error: string | null;
+  /** Index into `history` being replayed on the canvas, or null for live. */
+  replayIndex: number | null;
+  setReplayIndex(index: number | null): void;
   applyLive(tick: TickResult, goal: GoalStatus | null): void;
   applyCharts(points: ChartPoint[], traces: RequestTrace[]): void;
   setStatus(running: boolean, ready: boolean): void;
@@ -38,7 +41,9 @@ export const useSimStore = create<SimState>()((set) => ({
   traces: [],
   goal: null,
   error: null,
-  applyLive: (latest, goal) => set({ latest, goal, error: null }),
+  replayIndex: null,
+  setReplayIndex: (replayIndex) => set({ replayIndex }),
+  applyLive: (latest, goal) => set({ latest, goal, error: null, replayIndex: null }),
   applyCharts: (points, traces) =>
     set((s) => ({
       history: points.length ? [...s.history, ...points].slice(-HISTORY_LIMIT) : s.history,
@@ -48,5 +53,5 @@ export const useSimStore = create<SimState>()((set) => ({
   setSpeed: (speed) => set({ speed }),
   setSeed: (seed) => set({ seed }),
   setError: (error) => set({ error }),
-  clearResults: () => set({ latest: null, history: [], traces: [], goal: null }),
+  clearResults: () => set({ latest: null, history: [], traces: [], goal: null, replayIndex: null }),
 }));

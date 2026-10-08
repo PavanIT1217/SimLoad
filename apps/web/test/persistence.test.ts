@@ -37,7 +37,13 @@ describe('parseDesign', () => {
     });
     expect(design.nodes[1]?.config.instances).toBe(7);
     expect(design.nodes[1]?.config.capacityRps).toBeGreaterThan(0);
-    expect(design.edges[0]).toEqual({ id: 'c->s', source: 'c', target: 's', weight: 1 });
+    expect(design.edges[0]).toEqual({
+      id: 'c->s',
+      source: 'c',
+      target: 's',
+      weight: 1,
+      traffic: 'all',
+    });
     expect(design.traffic.profile).toBe('steady');
   });
 

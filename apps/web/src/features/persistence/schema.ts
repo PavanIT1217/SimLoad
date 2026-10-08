@@ -16,7 +16,8 @@ export class DesignParseError extends Error {
 }
 
 type Json = Record<string, unknown>;
-type NumericKey = Exclude<keyof NodeConfig, 'autoscale'>;
+type NumericKey = Exclude<keyof NodeConfig, 'autoscale' | 'circuitBreaker'>;
+const NESTED = new Set(['autoscale', 'circuitBreaker']);
 
 function isObject(value: unknown): value is Json {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -34,8 +35,9 @@ function parseConfig(kind: ComponentKind, raw: unknown): NodeConfig {
   const defaults = defaultConfig(kind);
   if (!isObject(raw)) return defaults;
   const autoscale = isObject(raw.autoscale) ? raw.autoscale : {};
+  const breaker = isObject(raw.circuitBreaker) ? raw.circuitBreaker : {};
   const config = { ...defaults };
-  const numericKeys = Object.keys(defaults).filter((k) => k !== 'autoscale') as NumericKey[];
+  const numericKeys = Object.keys(defaults).filter((k) => !NESTED.has(k)) as NumericKey[];
   for (const key of numericKeys) config[key] = num(raw[key], defaults[key]);
   config.autoscale = {
     enabled:
@@ -44,6 +46,12 @@ function parseConfig(kind: ComponentKind, raw: unknown): NodeConfig {
     minInstances: num(autoscale.minInstances, defaults.autoscale.minInstances),
     maxInstances: num(autoscale.maxInstances, defaults.autoscale.maxInstances),
     targetUtilization: num(autoscale.targetUtilization, defaults.autoscale.targetUtilization),
+  };
+  config.circuitBreaker = {
+    enabled:
+      typeof breaker.enabled === 'boolean' ? breaker.enabled : defaults.circuitBreaker.enabled,
+    errorThreshold: num(breaker.errorThreshold, defaults.circuitBreaker.errorThreshold),
+    openMs: num(breaker.openMs, defaults.circuitBreaker.openMs),
   };
   return config;
 }
@@ -64,6 +72,7 @@ function parseNode(raw: unknown, index: number): DesignNode {
     label: str(raw.label, raw.id),
     position: { x: num(position.x, 0), y: num(position.y, 0) },
     config: parseConfig(kind, raw.config),
+    ...(typeof raw.zone === 'string' && raw.zone !== '' ? { zone: raw.zone } : {}),
   };
 }
 
@@ -76,6 +85,7 @@ function parseEdge(raw: unknown, index: number): DesignEdge {
     source: raw.source,
     target: raw.target,
     weight: num(raw.weight, 1),
+    traffic: raw.traffic === 'read' || raw.traffic === 'write' ? raw.traffic : 'all',
   };
 }
 

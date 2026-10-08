@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import { useEffect } from 'react';
 import { Canvas } from '../features/canvas/Canvas';
-import { Inspector } from '../features/inspector/Inspector';
+import { RightPanel } from '../features/inspector/RightPanel';
 import { MetricsPanel } from '../features/metrics/MetricsPanel';
 import { Palette } from '../features/palette/Palette';
 import { useAutosave } from '../features/persistence/useAutosave';
@@ -15,6 +15,7 @@ import { PanelSplitter } from './PanelSplitter';
 import { TelemetryStrip } from './TelemetryStrip';
 import { Toast } from './Toast';
 import { TopBar } from './TopBar';
+import { useEditorShortcuts } from './useEditorShortcuts';
 import { useLayoutShortcuts } from './useLayoutShortcuts';
 import './layout.css';
 
@@ -30,6 +31,7 @@ export function App() {
   useScenarioGoal();
   useAutosave();
   useLayoutShortcuts();
+  useEditorShortcuts();
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -64,7 +66,7 @@ export function App() {
         </div>
         <PanelSplitter panel="inspector" />
         {/* Collapsed panels are unmounted, so hidden charts cost nothing. */}
-        {!collapsed.inspector ? <Inspector /> : <div aria-hidden="true" />}
+        {!collapsed.inspector ? <RightPanel /> : <div aria-hidden="true" />}
       </main>
       <PanelSplitter panel="metrics" />
       {!collapsed.metrics ? <MetricsPanel /> : <div aria-hidden="true" />}

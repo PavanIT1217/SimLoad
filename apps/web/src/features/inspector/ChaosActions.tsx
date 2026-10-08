@@ -11,6 +11,7 @@ const LATENCY_FAULT_MS = 15_000;
 const STORM_ERROR_RATE = 0.5;
 const STORM_DURATION_MS = 5_000;
 const STORM_RETRIES = 3;
+const ZONE_OUTAGE_MS = 20_000;
 
 export interface ChaosActionsProps {
   node: DesignNode;
@@ -43,6 +44,13 @@ export function ChaosActions({ node, live }: ChaosActionsProps) {
     );
   };
 
+  const killZone = () => {
+    const zone = node.zone;
+    const nodes = useDesignStore.getState().design.nodes.filter((n) => zone && n.zone === zone);
+    for (const n of nodes) simulation.injectFault(n.id, { kind: 'kill' }, ZONE_OUTAGE_MS);
+    showToast(`Zone ${zone} is down for 20s: ${nodes.length} component(s) offline.`);
+  };
+
   return (
     <Section title="Chaos">
       <div className="chaos-grid">
@@ -60,6 +68,11 @@ export function ChaosActions({ node, live }: ChaosActionsProps) {
         {caching && (
           <Button onClick={() => simulation.injectFault(node.id, { kind: 'flushCache' })}>
             Flush cache
+          </Button>
+        )}
+        {node.zone && (
+          <Button variant="danger" onClick={killZone}>
+            Kill zone {node.zone}
           </Button>
         )}
         <Button variant="ghost" onClick={() => simulation.clearFault(node.id)}>

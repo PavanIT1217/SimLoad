@@ -57,7 +57,7 @@ function CanvasInner() {
         source: e.source,
         target: e.target,
         type: 'flow',
-        data: { weight: e.weight },
+        data: { weight: e.weight, traffic: e.traffic ?? 'all' },
         selected: selection?.type === 'edge' && selection.id === e.id,
       })),
     [design.edges, selection],

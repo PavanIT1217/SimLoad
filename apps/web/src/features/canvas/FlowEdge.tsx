@@ -1,11 +1,12 @@
 import { BaseEdge, EdgeLabelRenderer, getBezierPath } from '@xyflow/react';
+import type { EdgeTraffic } from '@syssim/engine';
 import type { Edge, EdgeProps } from '@xyflow/react';
 import { memo } from 'react';
 import { useSimStore } from '../../state/simStore';
 import { formatCompact } from '../../ui/format';
 import { particleCount, particleDuration, strokeWidthFor } from './edgeStyle';
 
-export type FlowEdgeData = { weight: number };
+export type FlowEdgeData = { weight: number; traffic: EdgeTraffic };
 export type SystemFlowEdge = Edge<FlowEdgeData, 'flow'>;
 
 function FlowEdgeView({
@@ -58,6 +59,11 @@ function FlowEdgeView({
           style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
         >
           {active ? formatCompact(rps) : '0'}
+          {data && data.traffic !== 'all' && (
+            <span className={`flow-edge-class is-${data.traffic}`} title={`${data.traffic}s only`}>
+              {data.traffic === 'read' ? 'R' : 'W'}
+            </span>
+          )}
           {data && data.weight !== 1 && <span className="flow-edge-weight">w{data.weight}</span>}
         </div>
       </EdgeLabelRenderer>

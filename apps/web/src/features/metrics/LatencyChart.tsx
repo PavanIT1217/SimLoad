@@ -4,6 +4,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -11,6 +12,7 @@ import {
 } from 'recharts';
 import { formatMs } from '../../ui/format';
 import { ChartCard } from './ChartCard';
+import { useReplayTime } from './useReplayTime';
 import { useChartHistory } from './useChartHistory';
 import {
   AXIS_PROPS,
@@ -24,6 +26,7 @@ import {
 
 function LatencyChartView() {
   const history = useChartHistory();
+  const replayT = useReplayTime();
   const last = history[history.length - 1];
   const chart = useMemo(
     () => (
@@ -32,6 +35,9 @@ function LatencyChartView() {
           <CartesianGrid {...GRID_PROPS} />
           <XAxis dataKey="t" {...AXIS_PROPS} tickFormatter={timeTick} minTickGap={24} />
           <YAxis {...AXIS_PROPS} width={52} tickFormatter={(v: number) => formatMs(v)} />
+          {replayT !== null && (
+            <ReferenceLine x={replayT} stroke="var(--accent-2)" strokeWidth={1.5} />
+          )}
           <Tooltip {...TOOLTIP_PROPS} formatter={(v) => formatMs(Number(v))} />
           <Legend {...LEGEND_PROPS} />
           <Line {...LINE_PROPS} dataKey="p50" name="p50" stroke={SERIES[0]} />
@@ -40,7 +46,7 @@ function LatencyChartView() {
         </LineChart>
       </ResponsiveContainer>
     ),
-    [history],
+    [history, replayT],
   );
   return (
     <ChartCard title="End-to-end latency" value={last ? `p99 ${formatMs(last.p99)}` : undefined}>

@@ -1,5 +1,5 @@
 // Runs the engine off the main thread so the UI stays responsive at any speed.
-import { createGoalTracker, createSimulation } from '@syssim/engine';
+import { createGoalTracker, createSimulation, estimateCost } from '@syssim/engine';
 import type { GoalTracker, Simulation, TickResult } from '@syssim/engine';
 import { toChartPoint } from './aggregate';
 import type { WorkerRequest, WorkerResponse } from './protocol';
@@ -126,7 +126,10 @@ function handle(msg: WorkerRequest): void {
       sim?.clearFault(msg.nodeId, msg.kind);
       return;
     case 'setGoal':
-      goal = msg.goal ? createGoalTracker(msg.goal) : null;
+      // Budget goals price each tick against the design currently being simulated.
+      goal = msg.goal
+        ? createGoalTracker(msg.goal, (t) => (sim ? estimateCost(sim.design, t).totalMonthly : 0))
+        : null;
       return;
   }
 }

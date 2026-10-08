@@ -45,3 +45,11 @@ export function formatSimTime(ms: number): string {
   const s = totalS % 60;
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
+
+/** "$1,234" (or "$0.42" below one dollar). */
+export function formatUsd(amount: number): string {
+  if (!Number.isFinite(amount)) return '–';
+  if (amount < 1) return `$${amount.toFixed(2)}`;
+  if (amount >= 1e6) return `$${formatCompact(amount)}`;
+  return `$${Math.round(amount).toLocaleString('en-US')}`;
+}

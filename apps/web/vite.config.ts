@@ -1,6 +1,6 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
-import { defaultClientConditions, defineConfig } from 'vite';
+import { defaultClientConditions, defaultServerConditions, defineConfig } from 'vite';
 
 /**
  * GitHub Pages serves project sites from /<repo>/. The deploy workflow runs
@@ -26,6 +26,10 @@ export default defineConfig({
   resolve: {
     // Consume the engine's TypeScript sources directly (see its package.json exports).
     conditions: ['source', ...defaultClientConditions],
+  },
+  ssr: {
+    // Vitest runs in the SSR environment, which has its own resolve conditions.
+    resolve: { conditions: ['source', ...defaultServerConditions] },
   },
   worker: {
     format: 'es',

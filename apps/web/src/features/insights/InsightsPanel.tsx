@@ -5,6 +5,7 @@ import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';
 import { useUiStore } from '../../state/uiStore';
 import { Section } from '../../ui/Section';
+import { CloudCompareView } from './CloudCompareView';
 import { CostBreakdownView } from './CostBreakdownView';
 import './insights.css';
 
@@ -70,6 +71,7 @@ export function InsightsPanel() {
         )}
       </Section>
       <CostBreakdownView />
+      <CloudCompareView />
     </div>
   );
 }

@@ -23,9 +23,12 @@ export interface UiState {
   toast: string | null;
   rightTab: RightTab;
   dockTab: DockTab;
-  /** Start-up announcement (countdown overlay); null once dismissed. */
+  /** Start-up briefing (welcome, mission, launch); null once dismissed. */
   startup: StartupInfo | null;
   setStartup(startup: StartupInfo | null): void;
+  /** Node the visitor predicted would break first, checked once the run starts. */
+  prediction: string | null;
+  setPrediction(nodeId: string | null): void;
   setRightTab(tab: RightTab): void;
   setDockTab(tab: DockTab): void;
   toggleTheme(): void;
@@ -44,6 +47,8 @@ export const useUiStore = create<UiState>()((set, get) => ({
   dockTab: 'live',
   startup: null,
   setStartup: (startup) => set({ startup }),
+  prediction: null,
+  setPrediction: (prediction) => set({ prediction }),
   setRightTab: (rightTab) => set({ rightTab }),
   setDockTab: (dockTab) => set({ dockTab }),
   toggleTheme: () => {

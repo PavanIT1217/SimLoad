@@ -74,6 +74,10 @@ export { createRng } from './util/rng';
 
 export type { CostBreakdown, NodeCost } from './metrics/cost';
 export { HOURS_PER_MONTH, billableInstances, estimateCost } from './metrics/cost';
+export type { CloudPriceList, CloudProviderId, CloudSku } from './metrics/cloudPrices';
+export { CLOUD_PRICES_AS_OF, CLOUD_PRICE_LISTS, PRICING_ASSUMPTIONS } from './metrics/cloudPrices';
+export type { CloudCost, CloudNodeCost } from './metrics/cloudCost';
+export { cloudPricePatches, cloudPrices, compareCloudCosts } from './metrics/cloudCost';
 export type { Insight, InsightSeverity } from './metrics/insights';
 export { diagnose } from './metrics/diagnose';
 export type {

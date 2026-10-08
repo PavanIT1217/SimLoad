@@ -43,6 +43,12 @@ latency and capacity).
   in one click (and one undo step).
 - **Cost model:** instance-hours plus per-million-request pricing, shown live
   per component. Scenario goals can include a monthly budget.
+- **Cloud cost comparison:** the same design priced on AWS, Azure and Google
+  Cloud on-demand list prices (checked October 2026). Each component maps to a
+  comparable managed product, e.g. EC2 m7i.large, Azure D2s v5 or GCE
+  n2-standard-2 for a service. One click copies a provider's prices into the
+  design. Storage, backups and discounts are not included, and prices change,
+  so verify with the provider before budgeting.
 - **Calculator:** back-of-the-envelope estimates (daily users → QPS, storage,
   bandwidth) that can set the traffic directly.
 
@@ -83,10 +89,13 @@ latency and capacity).
 - **Flexible workspace:**
   - Resizable, collapsible panels; focus mode with `F`.
   - Zoom, fit and minimap controls sit in a toolbar above the canvas.
-- Opens straight into the URL shortener scenario with a 3‑2‑1 countdown, then
-  starts the simulation. "Explore first" stays paused, and "Restore my last
-  design" brings back your own previous work. Shared links open their design
-  instead.
+- **Start-up briefing:** a welcome and introduction, then the mission (the URL
+  shortener scenario and its goal). You can predict which component will crack
+  first. Launch runs a pre-flight checklist and a T-minus 3‑2‑1, and the app
+  later tells you whether your prediction was right. Nothing starts until you
+  press Launch. "Explore first" stays paused, and "Restore my last design"
+  brings back your own previous work. Returning visitors can skip the intro.
+  Shared links open their design instead.
 - Dark ("mission control") theme by default, with a light theme one click away.
 - 100% client-side: no backend, no accounts.
 

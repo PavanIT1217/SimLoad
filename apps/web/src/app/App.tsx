@@ -12,7 +12,8 @@ import { useLayoutStore } from '../state/layoutStore';
 import { useSimStore } from '../state/simStore';
 import { useUiStore } from '../state/uiStore';
 import { PanelSplitter } from './PanelSplitter';
-import { StartOverlay } from './StartOverlay';
+import { PredictionReveal } from './start/PredictionReveal';
+import { StartOverlay } from './start/StartOverlay';
 import { TelemetryStrip } from './TelemetryStrip';
 import { Toast } from './Toast';
 import { TopBar } from './TopBar';
@@ -72,6 +73,7 @@ export function App() {
       <PanelSplitter panel="metrics" />
       {!collapsed.metrics ? <MetricsPanel /> : <div aria-hidden="true" />}
       <Toast />
+      <PredictionReveal />
       <StartOverlay />
     </div>
   );

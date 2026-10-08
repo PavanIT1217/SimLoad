@@ -12,17 +12,15 @@ export interface SimState {
   ready: boolean;
   speed: number;
   seed: number;
+  /** Latest tick: drives the canvas and live readouts (updated once per animation frame). */
   latest: TickResult | null;
+  /** Chart history and traces: throttled separately because charts are expensive to redraw. */
   history: ChartPoint[];
   traces: RequestTrace[];
   goal: GoalStatus | null;
   error: string | null;
-  applyFrame(
-    tick: TickResult,
-    points: ChartPoint[],
-    traces: RequestTrace[],
-    goal: GoalStatus | null,
-  ): void;
+  applyLive(tick: TickResult, goal: GoalStatus | null): void;
+  applyCharts(points: ChartPoint[], traces: RequestTrace[]): void;
   setStatus(running: boolean, ready: boolean): void;
   setSpeed(speed: number): void;
   setSeed(seed: number): void;
@@ -40,13 +38,11 @@ export const useSimStore = create<SimState>()((set) => ({
   traces: [],
   goal: null,
   error: null,
-  applyFrame: (tick, points, traces, goal) =>
+  applyLive: (latest, goal) => set({ latest, goal, error: null }),
+  applyCharts: (points, traces) =>
     set((s) => ({
-      latest: tick,
-      history: [...s.history, ...points].slice(-HISTORY_LIMIT),
-      traces: [...s.traces, ...traces].slice(-TRACE_LIMIT),
-      goal,
-      error: null,
+      history: points.length ? [...s.history, ...points].slice(-HISTORY_LIMIT) : s.history,
+      traces: traces.length ? [...s.traces, ...traces].slice(-TRACE_LIMIT) : s.traces,
     })),
   setStatus: (running, ready) => set({ running, ready }),
   setSpeed: (speed) => set({ speed }),

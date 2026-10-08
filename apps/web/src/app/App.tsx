@@ -9,6 +9,7 @@ import { useScenarioGoal } from '../features/scenarios/useScenarioGoal';
 import { useSimulationSync } from '../features/simulation/useSimulationSync';
 import { useSimStore } from '../state/simStore';
 import { useUiStore } from '../state/uiStore';
+import { TelemetryStrip } from './TelemetryStrip';
 import { Toast } from './Toast';
 import { TopBar } from './TopBar';
 import './layout.css';
@@ -28,6 +29,7 @@ export function App() {
     <div className="app">
       <TopBar />
       <div className="app-banners">
+        <TelemetryStrip />
         <GoalBanner />
         {error && (
           <div className="error-banner" role="alert">

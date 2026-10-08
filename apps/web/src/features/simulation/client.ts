@@ -1,5 +1,6 @@
 import type { Design, Fault, FaultKind, ScenarioGoal, TrafficSettings } from '@syssim/engine';
 import { useSimStore } from '../../state/simStore';
+import { FrameBuffer } from './frameBuffer';
 import type { WorkerRequest, WorkerResponse } from './protocol';
 
 /**
@@ -8,6 +9,7 @@ import type { WorkerRequest, WorkerResponse } from './protocol';
  */
 class SimulationClient {
   private worker: Worker | null = null;
+  private readonly frames = new FrameBuffer();
 
   private ensure(): Worker {
     if (this.worker) return this.worker;
@@ -29,12 +31,13 @@ class SimulationClient {
     const store = useSimStore.getState();
     switch (message.type) {
       case 'frame':
-        store.applyFrame(message.tick, message.points, message.traces, message.goal);
+        this.frames.push(message.tick, message.points, message.traces, message.goal);
         return;
       case 'status':
         store.setStatus(message.running, message.ready);
         return;
       case 'reset':
+        this.frames.clear();
         store.clearResults();
         return;
       case 'error':

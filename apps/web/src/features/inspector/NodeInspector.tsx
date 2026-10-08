@@ -11,6 +11,7 @@ import { KindIcon } from '../../ui/KindIcon';
 import { Section, Stat } from '../../ui/Section';
 import { CalibrationPanel } from './CalibrationPanel';
 import { ChaosActions } from './ChaosActions';
+import { Equations } from './Equations';
 import { fieldsFor, supportsAutoscale } from './fields';
 
 export interface NodeInspectorProps {
@@ -24,35 +25,38 @@ function LiveStats({ nodeId }: { nodeId: string }) {
   const tone =
     health === 'ok' ? 'ok' : health === 'warn' ? 'warn' : health === 'idle' ? 'muted' : 'bad';
   return (
-    <div className="stat-grid">
-      <Stat label="Status" value={HEALTH_LABEL[health]} tone={tone} />
-      <Stat label="Inflow" value={formatRps(live.inflowRps)} />
-      <Stat
-        label="Reads / writes"
-        value={`${formatCompact(live.readRps)} / ${formatCompact(live.writeRps)}`}
-      />
-      <Stat label="Capacity" value={formatRps(live.capacityRps)} />
-      <Stat label="Utilization" value={formatPct(live.saturation, 0)} tone={tone} />
-      <Stat label="Queue depth" value={formatCompact(live.queueDepth)} />
-      <Stat label="Local latency" value={formatMs(live.latencyMs)} />
-      <Stat label="End-to-end" value={formatMs(live.e2eLatencyMs)} />
-      <Stat
-        label="Dropped"
-        value={formatRps(live.droppedRps)}
-        tone={live.droppedRps > 0 ? 'bad' : undefined}
-      />
-      <Stat
-        label="Errors"
-        value={formatPct(1 - live.successRate, 2)}
-        tone={live.successRate < 0.999 ? 'bad' : undefined}
-      />
-      <Stat
-        label="Retries"
-        value={formatRps(live.retryRps)}
-        tone={live.retryRps > 0 ? 'warn' : undefined}
-      />
-      <Stat label="Instances" value={live.instances} />
-    </div>
+    <>
+      {live.kind !== 'client' && <Equations live={live} />}
+      <div className="stat-grid">
+        <Stat label="Status" value={HEALTH_LABEL[health]} tone={tone} />
+        <Stat label="Inflow" value={formatRps(live.inflowRps)} />
+        <Stat
+          label="Reads / writes"
+          value={`${formatCompact(live.readRps)} / ${formatCompact(live.writeRps)}`}
+        />
+        <Stat label="Capacity" value={formatRps(live.capacityRps)} />
+        <Stat label="Utilization" value={formatPct(live.saturation, 0)} tone={tone} />
+        <Stat label="Queue depth" value={formatCompact(live.queueDepth)} />
+        <Stat label="Local latency" value={formatMs(live.latencyMs)} />
+        <Stat label="End-to-end" value={formatMs(live.e2eLatencyMs)} />
+        <Stat
+          label="Dropped"
+          value={formatRps(live.droppedRps)}
+          tone={live.droppedRps > 0 ? 'bad' : undefined}
+        />
+        <Stat
+          label="Errors"
+          value={formatPct(1 - live.successRate, 2)}
+          tone={live.successRate < 0.999 ? 'bad' : undefined}
+        />
+        <Stat
+          label="Retries"
+          value={formatRps(live.retryRps)}
+          tone={live.retryRps > 0 ? 'warn' : undefined}
+        />
+        <Stat label="Instances" value={live.instances} />
+      </div>
+    </>
   );
 }
 

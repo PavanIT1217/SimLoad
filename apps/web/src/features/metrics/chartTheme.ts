@@ -5,22 +5,24 @@ export const SERIES = Array.from({ length: 8 }, (_, i) => `var(--chart-${i + 1})
 
 export const AXIS_PROPS = {
   stroke: 'var(--text-faint)',
-  tick: { fill: 'var(--text-muted)', fontSize: 10 },
+  tick: { fill: 'var(--text-muted)', fontSize: 9.5, fontFamily: 'var(--font-mono)' },
   tickLine: false,
   axisLine: false,
 } as const;
 
 export const GRID_PROPS = {
-  stroke: 'var(--grid)',
-  vertical: false,
+  stroke: 'var(--grid-major)',
+  strokeDasharray: '2 4',
 } as const;
 
 export const TOOLTIP_PROPS = {
   contentStyle: {
     background: 'var(--bg-elevated)',
-    border: '1px solid var(--border)',
-    borderRadius: 8,
+    border: '1px solid var(--accent)',
+    borderRadius: 2,
     fontSize: 11,
+    fontFamily: 'var(--font-mono)',
+    boxShadow: 'var(--glow)',
     color: 'var(--text)',
   },
   labelStyle: { color: 'var(--text-muted)' },
@@ -31,7 +33,7 @@ export const TOOLTIP_PROPS = {
 
 export const LEGEND_PROPS = {
   iconSize: 8,
-  wrapperStyle: { fontSize: 11, color: 'var(--text-muted)' },
+  wrapperStyle: { fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' },
 } as const;
 
 export const LINE_PROPS = {

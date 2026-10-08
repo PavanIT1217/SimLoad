@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import {
   Area,
   AreaChart,
@@ -7,16 +8,16 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { useSimStore } from '../../state/simStore';
 import { formatPct } from '../../ui/format';
 import { ChartCard } from './ChartCard';
+import { useChartHistory } from './useChartHistory';
 import { AXIS_PROPS, GRID_PROPS, LINE_PROPS, TOOLTIP_PROPS, timeTick } from './chartTheme';
 
-export function ErrorChart() {
-  const history = useSimStore((s) => s.history);
+function ErrorChartView() {
+  const history = useChartHistory();
   const last = history[history.length - 1];
-  return (
-    <ChartCard title="Error rate" value={last ? formatPct(last.errorRate, 2) : undefined}>
+  const chart = useMemo(
+    () => (
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={history} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid {...GRID_PROPS} />
@@ -37,6 +38,14 @@ export function ErrorChart() {
           />
         </AreaChart>
       </ResponsiveContainer>
+    ),
+    [history],
+  );
+  return (
+    <ChartCard title="Error rate" value={last ? formatPct(last.errorRate, 2) : undefined}>
+      {chart}
     </ChartCard>
   );
 }
+
+export const ErrorChart = memo(ErrorChartView);

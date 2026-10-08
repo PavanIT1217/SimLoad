@@ -35,7 +35,7 @@ export function SimulationControls() {
         Reset
       </Button>
       <span className="sim-clock mono" title="Simulated time">
-        {formatSimTime(timeMs)}
+        T+{formatSimTime(timeMs)}
       </span>
       <label className="topbar-field">
         <span className="topbar-label">Speed</span>

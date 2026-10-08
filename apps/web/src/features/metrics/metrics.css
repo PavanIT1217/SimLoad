@@ -12,9 +12,6 @@
   flex-direction: column;
   min-height: 0;
   min-width: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
   padding: 8px 10px;
 }
 .chart-card-header {
@@ -22,13 +19,18 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 8px;
-  font-weight: 600;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
   margin-bottom: 4px;
 }
 .chart-card-value {
-  color: var(--text-muted);
-  font-weight: 500;
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
 }
 .chart-card-body {
   flex: 1;
@@ -59,14 +61,16 @@
   gap: 6px;
   padding: 3px 6px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 2px;
   background: transparent;
   cursor: pointer;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
 }
 .trace-item:hover,
 .trace-item.is-active {
   background: var(--surface-hover);
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 .trace-item > span {
   white-space: nowrap;
@@ -82,9 +86,11 @@
 }
 .trace-dot.is-ok {
   background: var(--ok);
+  box-shadow: 0 0 5px var(--ok);
 }
 .trace-dot.is-bad {
   background: var(--bad);
+  box-shadow: 0 0 5px var(--bad);
 }
 .waterfall {
   overflow-y: auto;
@@ -109,16 +115,17 @@
 }
 .waterfall-track {
   position: relative;
-  height: 10px;
+  height: 8px;
   background: var(--bg-sunken);
-  border-radius: 3px;
+  border: 1px solid var(--border);
+  border-radius: 1px;
 }
 .waterfall-bar {
   position: absolute;
   top: 0;
   bottom: 0;
-  border-radius: 3px;
-  background: var(--chart-1);
+  border-radius: 1px;
+  background: var(--accent);
 }
 .waterfall-bar.outcome-hit,
 .waterfall-bar.outcome-enqueued {

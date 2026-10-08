@@ -18,8 +18,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
   cursor: grab;
@@ -30,7 +30,8 @@
 }
 .palette-item:hover {
   background: var(--surface-hover);
-  border-color: var(--border-strong);
+  border-color: var(--accent);
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 .palette-item:active {
   cursor: grabbing;
@@ -40,7 +41,8 @@
   place-items: center;
   width: 30px;
   height: 30px;
-  border-radius: 7px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
   background: var(--bg-sunken);
   color: var(--accent);
   flex: none;
@@ -54,12 +56,15 @@
   font-weight: 600;
 }
 .palette-desc {
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
   color: var(--text-muted);
 }
 .palette-tip {
   margin: 4px 0 0;
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: 10px;
   color: var(--text-faint);
 }
 

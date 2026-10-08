@@ -102,6 +102,14 @@ gives byte-identical `TickResult`s; a test checks this.
   for the canvas. `simStore` holds live results; components subscribe to narrow
   slices so a frame only re-renders what changed. `uiStore` holds the theme,
   mode, scenario and toasts.
+- **Smooth rendering:**
+  - The worker caps simulation work at about 70% of each 50 ms frame, so at
+    high speeds it slows down instead of falling behind.
+  - `FrameBuffer` coalesces worker frames into one store update per animation
+    frame, and flushes chart history at most 4 times a second.
+  - Charts read their data through `useDeferredValue` and are memoised, so a
+    redraw is interruptible, low-priority work that never blocks dragging.
+  - Node and edge components subscribe to their own slice of the latest tick.
 - **Persistence:** every load path goes through `parseDesign`, which validates
   untrusted JSON and fills missing fields with defaults.
 

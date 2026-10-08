@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -9,10 +10,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useShallow } from 'zustand/react/shallow';
 import { useDesignStore } from '../../state/designStore';
-import { useSimStore } from '../../state/simStore';
 import { formatPct } from '../../ui/format';
 import { ChartCard } from './ChartCard';
+import { useChartHistory } from './useChartHistory';
 import {
   AXIS_PROPS,
   GRID_PROPS,
@@ -26,14 +28,26 @@ import {
 /** More series than categorical colours would be unreadable; show the first eight. */
 const MAX_SERIES = SERIES.length;
 
-export function UtilizationChart() {
-  const history = useSimStore((s) => s.history);
-  const nodes = useDesignStore((s) => s.design.nodes);
+function UtilizationChartView() {
+  const history = useChartHistory();
+  // Only ids and labels matter here; dragging nodes around must not redraw the chart.
+  const series = useDesignStore(
+    useShallow((s) =>
+      s.design.nodes.filter((n) => n.kind !== 'client').map((n) => `${n.id}\u0000${n.label}`),
+    ),
+  );
   // Colour follows the node's position in the design, so filtering never repaints survivors.
-  const tracked = nodes.filter((n) => n.kind !== 'client').slice(0, MAX_SERIES);
-  const hidden = nodes.filter((n) => n.kind !== 'client').length - tracked.length;
-  return (
-    <ChartCard title="Utilization per node" value={hidden > 0 ? `+${hidden} not shown` : undefined}>
+  const tracked = useMemo(
+    () =>
+      series.slice(0, MAX_SERIES).map((key) => {
+        const [id = '', label = ''] = key.split('\u0000');
+        return { id, label };
+      }),
+    [series],
+  );
+  const hidden = series.length - tracked.length;
+  const chart = useMemo(
+    () => (
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={history} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid {...GRID_PROPS} />
@@ -59,6 +73,14 @@ export function UtilizationChart() {
           ))}
         </LineChart>
       </ResponsiveContainer>
+    ),
+    [history, tracked],
+  );
+  return (
+    <ChartCard title="Utilization per node" value={hidden > 0 ? `+${hidden} not shown` : undefined}>
+      {chart}
     </ChartCard>
   );
 }
+
+export const UtilizationChart = memo(UtilizationChartView);

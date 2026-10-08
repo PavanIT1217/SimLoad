@@ -50,7 +50,7 @@ export function TraceViewer() {
   const recent = [...traces].reverse();
   const selected = recent.find((t) => t.id === selectedId) ?? recent[0];
   return (
-    <figure className="chart-card trace-viewer">
+    <figure className="chart-card hud trace-viewer">
       <figcaption className="chart-card-header">
         <span>Sampled request traces</span>
         <span className="muted small">{traces.length} recent</span>

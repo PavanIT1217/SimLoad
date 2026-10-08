@@ -3,7 +3,7 @@ import type { Edge, EdgeProps } from '@xyflow/react';
 import { memo } from 'react';
 import { useSimStore } from '../../state/simStore';
 import { formatCompact } from '../../ui/format';
-import { strokeWidthFor } from './edgeStyle';
+import { particleCount, particleDuration, strokeWidthFor } from './edgeStyle';
 
 export type FlowEdgeData = { weight: number };
 export type SystemFlowEdge = Edge<FlowEdgeData, 'flow'>;
@@ -29,15 +29,29 @@ function FlowEdgeView({
     sourcePosition,
     targetPosition,
   });
-  const active = rps > 0;
+  const active = rps > 0.5;
+  const particles = running && active ? particleCount(rps) : 0;
+  // Quantised, so the SMIL animation is not restarted on every small change in flow.
+  const duration = particleDuration(rps);
+
   return (
     <>
       <BaseEdge
         id={id}
         path={path}
-        className={`flow-edge ${active && running ? 'is-flowing' : ''} ${selected ? 'is-selected' : ''}`}
-        style={{ strokeWidth: active ? strokeWidthFor(rps) : 1.5 }}
+        className={`flow-edge ${active ? 'is-active' : ''} ${selected ? 'is-selected' : ''}`}
+        style={{ strokeWidth: active ? strokeWidthFor(rps) : 1.25 }}
       />
+      {Array.from({ length: particles }, (_, i) => (
+        <circle key={i} className="flow-particle" r={2.2}>
+          <animateMotion
+            dur={`${duration}s`}
+            repeatCount="indefinite"
+            path={path}
+            begin={`${(-duration * i) / particles}s`}
+          />
+        </circle>
+      ))}
       <EdgeLabelRenderer>
         <div
           className={`flow-edge-label mono ${selected ? 'is-selected' : ''}`}

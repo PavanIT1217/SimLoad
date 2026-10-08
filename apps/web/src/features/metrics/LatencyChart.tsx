@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -8,9 +9,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { useSimStore } from '../../state/simStore';
 import { formatMs } from '../../ui/format';
 import { ChartCard } from './ChartCard';
+import { useChartHistory } from './useChartHistory';
 import {
   AXIS_PROPS,
   GRID_PROPS,
@@ -21,11 +22,11 @@ import {
   timeTick,
 } from './chartTheme';
 
-export function LatencyChart() {
-  const history = useSimStore((s) => s.history);
+function LatencyChartView() {
+  const history = useChartHistory();
   const last = history[history.length - 1];
-  return (
-    <ChartCard title="End-to-end latency" value={last ? `p99 ${formatMs(last.p99)}` : undefined}>
+  const chart = useMemo(
+    () => (
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={history} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid {...GRID_PROPS} />
@@ -38,6 +39,14 @@ export function LatencyChart() {
           <Line {...LINE_PROPS} dataKey="p99" name="p99" stroke={SERIES[2]} />
         </LineChart>
       </ResponsiveContainer>
+    ),
+    [history],
+  );
+  return (
+    <ChartCard title="End-to-end latency" value={last ? `p99 ${formatMs(last.p99)}` : undefined}>
+      {chart}
     </ChartCard>
   );
 }
+
+export const LatencyChart = memo(LatencyChartView);

@@ -35,14 +35,25 @@ function emit(ticks: TickResult[]): void {
   if (!last || !point) return;
   let status = goal?.status() ?? null;
   for (const t of ticks) status = goal?.observe(t) ?? null;
-  const traces = ticks.flatMap((t) => t.traces).slice(-MAX_TRACES_PER_FRAME);
+  const traces = ticks
+    .slice(-4)
+    .flatMap((t) => t.traces)
+    .slice(-MAX_TRACES_PER_FRAME);
   post({ type: 'frame', tick: last, points: [point], traces, goal: status });
 }
+
+/** Max wall time spent simulating per frame, so the worker never falls behind. */
+const FRAME_BUDGET_MS = FRAME_MS * 0.7;
 
 function advance(count: number): void {
   if (!sim || count <= 0) return;
   const ticks: TickResult[] = [];
-  for (let i = 0; i < count; i++) ticks.push(sim.step());
+  const start = performance.now();
+  for (let i = 0; i < count; i++) {
+    ticks.push(sim.step());
+    // At high speeds on slow machines, run slower rather than queue up work.
+    if (performance.now() - start > FRAME_BUDGET_MS) break;
+  }
   emit(ticks);
 }
 

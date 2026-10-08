@@ -8,7 +8,7 @@ export interface ChartCardProps {
 
 export function ChartCard({ title, value, children }: ChartCardProps) {
   return (
-    <figure className="chart-card">
+    <figure className="chart-card hud">
       <figcaption className="chart-card-header">
         <span>{title}</span>
         {value !== undefined && <span className="chart-card-value mono">{value}</span>}

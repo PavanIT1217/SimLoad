@@ -1,5 +1,6 @@
 import {
   Background,
+  BackgroundVariant,
   Controls,
   MiniMap,
   ReactFlow,
@@ -123,7 +124,13 @@ function CanvasInner() {
         minZoom={0.2}
         proOptions={{ hideAttribution: true }}
       >
-        <Background gap={20} size={1} />
+        <Background id="minor" variant={BackgroundVariant.Lines} gap={24} color="var(--grid)" />
+        <Background
+          id="major"
+          variant={BackgroundVariant.Lines}
+          gap={120}
+          color="var(--grid-major)"
+        />
         <Controls showInteractive={false} />
         <MiniMap pannable zoomable className="canvas-minimap" />
       </ReactFlow>

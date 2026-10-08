@@ -1,14 +1,24 @@
 .goal-banner {
   border-bottom: 1px solid var(--border);
   background: var(--bg-elevated);
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 12px;
+  box-shadow: inset 3px 0 0 var(--accent-2);
+}
+.goal-banner strong {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-2);
 }
 .goal-banner.goal-pass {
   background: var(--ok-bg);
+  box-shadow: inset 3px 0 0 var(--ok);
 }
 .goal-banner.goal-fail {
   background: var(--bad-bg);
+  box-shadow: inset 3px 0 0 var(--bad);
 }
 .goal-main {
   display: flex;
@@ -17,32 +27,38 @@
   gap: 6px 12px;
 }
 .goal-pill {
+  font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 11px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 2px;
   background: var(--surface);
   border: 1px solid var(--border);
 }
 .pill-pass {
   color: var(--ok);
   border-color: var(--ok);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--ok) 40%, transparent);
 }
 .pill-fail {
   color: var(--bad);
   border-color: var(--bad);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--bad) 40%, transparent);
 }
 .goal-progress {
   width: 80px;
   height: 4px;
-  border-radius: 2px;
+  border-radius: 1px;
   background: var(--bg-sunken);
   overflow: hidden;
 }
 .goal-progress span {
   display: block;
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 250ms linear;
 }
 .goal-checks {
   display: inline-flex;

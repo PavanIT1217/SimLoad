@@ -24,6 +24,15 @@ export interface AutoscaleConfig {
   targetUtilization: number;
 }
 
+/** Opens when callers see too many failures, then fails fast until `openMs` passes. */
+export interface CircuitBreakerConfig {
+  enabled: boolean;
+  /** Failure fraction (0..1) that trips the breaker. */
+  errorThreshold: number;
+  /** How long the breaker stays open before letting probe traffic through. */
+  openMs: number;
+}
+
 /**
  * Tunable properties of a node. Every kind carries the full set so a design is
  * a plain, uniform data structure; kind-specific fields are ignored elsewhere.
@@ -50,7 +59,24 @@ export interface NodeConfig {
   replicas: number;
   /** Drain rate of a queue node in msg/s. */
   consumerRps: number;
+  /** Base delay before a retry; grows 2^n with full jitter (0 = retry immediately). */
+  retryBackoffMs: number;
+  /** Max retries as a fraction of first attempts (0 = unlimited), like gRPC retry budgets. */
+  retryBudget: number;
+  /** Requests above this rate are shed immediately with an error (0 = no limit). */
+  rateLimitRps: number;
+  /** Database shards; each shard has `instances` primaries and `replicas` replicas. */
+  shards: number;
+  /** 0 = keys spread evenly, 1 = all traffic hits one shard (hot key). */
+  hotKeySkew: number;
+  /** Extra latency served by freshly started instances while they warm up. */
+  coldStartMs: number;
+  /** Price of one instance per hour (USD). */
+  costPerHour: number;
+  /** Price per million requests served (USD), for managed services. */
+  costPerMillion: number;
   autoscale: AutoscaleConfig;
+  circuitBreaker: CircuitBreakerConfig;
 }
 
 export interface Position {
@@ -64,14 +90,23 @@ export interface DesignNode {
   label: string;
   position: Position;
   config: NodeConfig;
+  /** Availability zone or region label, used for zone-outage chaos (optional). */
+  zone?: string;
 }
+
+export type RequestClass = 'read' | 'write';
+
+/** Which requests an edge carries. */
+export type EdgeTraffic = 'all' | RequestClass;
 
 export interface DesignEdge {
   id: string;
   source: string;
   target: string;
-  /** Relative routing weight among a node's outgoing edges. */
+  /** Relative routing weight among the source's outgoing edges for the same class. */
   weight: number;
+  /** Request class this edge carries (default 'all'), e.g. reads to a cache, writes to a queue. */
+  traffic?: EdgeTraffic;
 }
 
 export type TrafficProfile = 'steady' | 'dailyWave' | 'flashSpike' | 'ramp';

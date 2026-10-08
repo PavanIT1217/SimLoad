@@ -16,9 +16,14 @@ export function desiredInstances(node: DesignNode, offeredRps: number): number {
   return clamp(needed, Math.max(1, policy.minInstances), Math.max(1, policy.maxInstances));
 }
 
+/** How long a newly started instance pays its cold-start penalty. */
+export const WARMUP_MS = 10_000;
+
 /** Applies a pending scaling action once its delay has elapsed. */
 export function applyPendingScale(runtime: NodeRuntime, nowMs: number): void {
   if (runtime.pendingScale && nowMs >= runtime.pendingScale.atMs) {
+    const added = runtime.pendingScale.target - runtime.instances;
+    if (added > 0) runtime.warming.push({ count: added, untilMs: nowMs + WARMUP_MS });
     runtime.instances = runtime.pendingScale.target;
     runtime.pendingScale = null;
   }

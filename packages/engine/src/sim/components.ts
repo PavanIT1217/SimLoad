@@ -26,6 +26,16 @@ export function perInstanceCapacity(config: NodeConfig): number {
   return Math.min(config.capacityRps, config.maxConcurrency / serviceS);
 }
 
+/**
+ * Share of a database's traffic that lands on its hottest shard:
+ * 1/S for evenly spread keys, rising to 1 when one hot key takes everything.
+ */
+export function hottestShardShare(config: NodeConfig): number {
+  const shards = Math.max(1, Math.floor(config.shards));
+  const skew = Math.min(1, Math.max(0, config.hotKeySkew));
+  return 1 / shards + skew * (1 - 1 / shards);
+}
+
 /** Pool layout for a node running `instances` instances. */
 export function poolLayout(node: DesignNode, instances: number): PoolLayout {
   const cfg = node.config;
@@ -47,19 +57,22 @@ export function poolLayout(node: DesignNode, instances: number): PoolLayout {
         writePool: 'main',
       };
     case 'database': {
+      // Sharding multiplies capacity, but the hottest shard saturates first:
+      // effective capacity = per-shard capacity / hottest shard's load share.
+      const scale = 1 / hottestShardShare(cfg);
       const perInstance = perInstanceCapacity(cfg);
       const primary: PoolSpec = {
         name: 'primary',
-        capacityRps: perInstance * instances,
-        servers: cfg.maxConcurrency * instances,
+        capacityRps: perInstance * instances * scale,
+        servers: cfg.maxConcurrency * instances * scale,
         maxQueue: cfg.maxQueue,
       };
       const replicas = Math.floor(cfg.replicas);
       if (replicas <= 0) return { pools: [primary], readPool: 'primary', writePool: 'primary' };
       const replica: PoolSpec = {
         name: 'replica',
-        capacityRps: perInstance * replicas,
-        servers: cfg.maxConcurrency * replicas,
+        capacityRps: perInstance * replicas * scale,
+        servers: cfg.maxConcurrency * replicas * scale,
         maxQueue: cfg.maxQueue,
       };
       return { pools: [primary, replica], readPool: 'replica', writePool: 'primary' };

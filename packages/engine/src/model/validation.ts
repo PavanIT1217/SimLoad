@@ -13,6 +13,11 @@ function configIssues(node: DesignNode): string[] {
     ['retries', c.retries],
     ['replicas', c.replicas],
     ['consumerRps', c.consumerRps],
+    ['retryBackoffMs', c.retryBackoffMs],
+    ['rateLimitRps', c.rateLimitRps],
+    ['coldStartMs', c.coldStartMs],
+    ['costPerHour', c.costPerHour],
+    ['costPerMillion', c.costPerMillion],
   ];
   for (const [name, value] of nonNegative) {
     if (!Number.isFinite(value) || value < 0) problems.push(`${name} must be >= 0`);
@@ -21,7 +26,16 @@ function configIssues(node: DesignNode): string[] {
   if (!Number.isFinite(c.maxConcurrency) || c.maxConcurrency < 1) {
     problems.push('maxConcurrency must be >= 1');
   }
-  if (!(c.hitRatio >= 0 && c.hitRatio <= 1)) problems.push('hitRatio must be within 0..1');
+  const fractions: [string, number][] = [
+    ['hitRatio', c.hitRatio],
+    ['hotKeySkew', c.hotKeySkew],
+    ['retryBudget', c.retryBudget],
+    ['circuitBreaker.errorThreshold', c.circuitBreaker.errorThreshold],
+  ];
+  for (const [name, value] of fractions) {
+    if (!(value >= 0 && value <= 1)) problems.push(`${name} must be within 0..1`);
+  }
+  if (!Number.isFinite(c.shards) || c.shards < 1) problems.push('shards must be >= 1');
   if (node.kind !== 'client' && node.kind !== 'queue' && c.capacityRps <= 0) {
     problems.push('capacityRps must be > 0');
   }

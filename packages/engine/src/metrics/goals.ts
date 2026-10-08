@@ -8,6 +8,8 @@ export interface ScenarioGoal {
   maxErrorRate: number;
   /** Simulated seconds the goal must hold at the target load. */
   holdSeconds: number;
+  /** Optional budget: estimated monthly cost (USD) must stay under this. */
+  maxMonthlyCost?: number;
 }
 
 export interface GoalCheck {
@@ -30,15 +32,23 @@ interface Observation {
   p99: number;
   offered: number;
   failed: number;
+  cost: number;
 }
+
+/** Maps a tick to its estimated monthly cost (needed for budget goals). */
+export type CostFn = (tick: TickResult) => number;
 
 /** Ticks at the start of a run at target load that are ignored while queues settle. */
 const SETTLE_TICKS = 10;
 
 export function describeGoal(goal: ScenarioGoal): string {
+  const budget =
+    goal.maxMonthlyCost !== undefined
+      ? ` under $${goal.maxMonthlyCost.toLocaleString('en-US')}/month`
+      : '';
   return (
     `Keep p99 < ${goal.maxP99Ms} ms and error rate < ${(goal.maxErrorRate * 100).toFixed(2)}% ` +
-    `at ${goal.targetRps.toLocaleString('en-US')} req/s for ${goal.holdSeconds}s`
+    `at ${goal.targetRps.toLocaleString('en-US')} req/s for ${goal.holdSeconds}s${budget}`
   );
 }
 
@@ -53,7 +63,7 @@ export interface GoalTracker {
  * Tracks a running simulation against a goal. The verdict is computed over
  * the most recent `holdSeconds` of ticks where offered load is at the target.
  */
-export function createGoalTracker(goal: ScenarioGoal): GoalTracker {
+export function createGoalTracker(goal: ScenarioGoal, costOf?: CostFn): GoalTracker {
   let atTarget: Observation[] = [];
   let settle = 0;
 
@@ -70,6 +80,7 @@ export function createGoalTracker(goal: ScenarioGoal): GoalTracker {
           p99: result.latency.p99,
           offered: result.offeredRps,
           failed: result.offeredRps * result.errorRate,
+          cost: costOf ? costOf(result) : 0,
         });
         const cutoff = result.timeMs - goal.holdSeconds * 1000;
         while (atTarget.length > 0 && (atTarget[0] as Observation).timeMs <= cutoff) {
@@ -97,6 +108,15 @@ export function createGoalTracker(goal: ScenarioGoal): GoalTracker {
           ok: errorRate < goal.maxErrorRate,
         },
       ];
+      if (goal.maxMonthlyCost !== undefined && costOf) {
+        const cost = atTarget.length > 0 ? Math.max(...atTarget.map((o) => o.cost)) : 0;
+        checks.push({
+          label: 'Monthly cost ($)',
+          actual: cost,
+          limit: goal.maxMonthlyCost,
+          ok: cost <= goal.maxMonthlyCost,
+        });
+      }
       if (atTarget.length === 0 || progress < 1) {
         return {
           state: 'pending',

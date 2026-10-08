@@ -4,7 +4,7 @@ import type { LatencySummary } from '../metrics/percentiles';
 import type { FlowResult, NodeFlow } from './flow';
 import type { NodeOutcome } from './propagation';
 import type { RequestTrace } from './sampler';
-import type { NodeRuntime } from './state';
+import type { BreakerState, NodeRuntime } from './state';
 
 /** Per-node metrics for one tick. Rates are req/s. */
 export interface NodeTickState {
@@ -35,6 +35,13 @@ export interface NodeTickState {
   failed: boolean;
   hitRatio: number;
   faults: FaultKind[];
+  /** Requests rejected by this node's rate limit. */
+  shedRps: number;
+  /** Calls rejected by this node's circuit breaker. */
+  rejectedRps: number;
+  breaker: BreakerState;
+  /** Fraction of traffic hitting cold (just-started) instances. */
+  coldFraction: number;
 }
 
 export interface TickResult {
@@ -107,6 +114,10 @@ export function buildNodeState(
     failed: flow.failed,
     hitRatio: flow.hitRatio,
     faults: [...runtime.faults.keys()],
+    shedRps: flow.shedRps,
+    rejectedRps: flow.rejectedRps,
+    breaker: runtime.breaker,
+    coldFraction: flow.coldFraction,
   };
 }
 

@@ -10,6 +10,7 @@ import type { Rng } from '../util/rng';
 import { applyPendingScale, evaluateAutoscale } from './autoscale';
 import { forwardPass } from './flow';
 import { backwardPass } from './propagation';
+import { updateBreaker } from './resilience';
 import type { TickResult } from './result';
 import { buildNodeState, selectTraces, systemTotals } from './result';
 import { sampleRequests } from './sampler';
@@ -105,6 +106,7 @@ export function createSimulation(
     const samples = sampleRequests(
       graph,
       flows,
+      runtimes,
       rng,
       offered > 0 ? opts.samplesPerTick : 0,
       readRatio,
@@ -119,7 +121,9 @@ export function createSimulation(
       const outcome = outcomes.get(id);
       const runtime = runtimes.get(id) as NodeRuntime;
       if (!flow || !outcome) continue;
-      nodes[id] = buildNodeState(flow, outcome, runtime);
+      const state = buildNodeState(flow, outcome, runtime);
+      nodes[id] = state;
+      updateBreaker(flow.node, runtime, 1 - state.successRate, state.inflowRps > 0, timeMs);
       evaluateAutoscale(flow.node, runtime, flow.inflow.read + flow.inflow.write, timeMs);
       runtime.cacheWarmth = Math.min(1, runtime.cacheWarmth + dtS / CACHE_WARMUP_S);
     }

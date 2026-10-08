@@ -1,4 +1,4 @@
-import type { Design, DesignNode } from './types';
+import type { Design, DesignEdge, DesignNode, RequestClass } from './types';
 
 /** An outgoing edge with its normalised routing share. */
 export interface Route {
@@ -7,14 +7,34 @@ export interface Route {
   share: number;
 }
 
+export type ClassRoutes = Record<RequestClass, Route[]>;
+
 /** Precomputed, immutable view of a design used by the simulation. */
 export interface CompiledGraph {
   order: string[];
   nodes: Map<string, DesignNode>;
-  routes: Map<string, Route[]>;
-  /** Routing shares per node, aligned with `routes` (precomputed for the sampler). */
-  shares: Map<string, number[]>;
+  /** Outgoing routes per node and request class; shares sum to 1 within each class. */
+  routes: Map<string, ClassRoutes>;
+  /** Routing shares aligned with `routes` (precomputed for the sampler). */
+  shares: Map<string, Record<RequestClass, number[]>>;
   clients: string[];
+}
+
+export const REQUEST_CLASSES: readonly RequestClass[] = ['read', 'write'];
+
+/** Whether an edge carries requests of the given class. */
+export function edgeCarries(edge: DesignEdge, cls: RequestClass): boolean {
+  return (edge.traffic ?? 'all') === 'all' || edge.traffic === cls;
+}
+
+function classRoutes(out: readonly DesignEdge[], cls: RequestClass): Route[] {
+  const carried = out.filter((e) => edgeCarries(e, cls));
+  const total = carried.reduce((sum, e) => sum + e.weight, 0);
+  return carried.map((e) => ({
+    edgeId: e.id,
+    target: e.target,
+    share: total > 0 ? e.weight / total : 0,
+  }));
 }
 
 /** Kahn topological sort. Returns null when the graph has a cycle. */
@@ -68,18 +88,19 @@ export function compileGraph(design: Design): CompiledGraph {
   const order = topologicalOrder(design);
   if (!order) throw new Error('Design contains a cycle');
   const nodes = new Map(design.nodes.map((n) => [n.id, n]));
-  const routes = new Map<string, Route[]>();
+  const routes = new Map<string, ClassRoutes>();
+  const shares = new Map<string, Record<RequestClass, number[]>>();
   for (const node of design.nodes) {
     const out = design.edges.filter(
       (e) => e.source === node.id && nodes.has(e.target) && e.weight > 0,
     );
-    const total = out.reduce((sum, e) => sum + e.weight, 0);
-    routes.set(
-      node.id,
-      out.map((e) => ({ edgeId: e.id, target: e.target, share: total > 0 ? e.weight / total : 0 })),
-    );
+    const r: ClassRoutes = { read: classRoutes(out, 'read'), write: classRoutes(out, 'write') };
+    routes.set(node.id, r);
+    shares.set(node.id, {
+      read: r.read.map((x) => x.share),
+      write: r.write.map((x) => x.share),
+    });
   }
   const clients = design.nodes.filter((n) => n.kind === 'client').map((n) => n.id);
-  const shares = new Map([...routes].map(([id, list]) => [id, list.map((r) => r.share)]));
   return { order, nodes, routes, shares, clients };
 }

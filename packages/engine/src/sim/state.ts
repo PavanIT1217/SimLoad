@@ -14,6 +14,14 @@ export interface PendingScale {
   atMs: number;
 }
 
+export type BreakerState = 'closed' | 'open' | 'halfOpen';
+
+/** Instances that started recently and still pay a cold-start penalty. */
+export interface WarmingBatch {
+  count: number;
+  untilMs: number;
+}
+
 /** Mutable per-node state that survives across ticks. */
 export interface NodeRuntime {
   instances: number;
@@ -22,6 +30,9 @@ export interface NodeRuntime {
   /** 0..1 multiplier on cache hit ratio; drops to 0 on flush and warms back up. */
   cacheWarmth: number;
   pendingScale: PendingScale | null;
+  warming: WarmingBatch[];
+  breaker: BreakerState;
+  breakerUntilMs: number;
   /** End-to-end success probability seen by callers, from the previous tick. */
   successRead: number;
   successWrite: number;
@@ -37,6 +48,9 @@ export function createNodeRuntime(node: DesignNode): NodeRuntime {
     faults: new Map(),
     cacheWarmth: 1,
     pendingScale: null,
+    warming: [],
+    breaker: 'closed',
+    breakerUntilMs: 0,
     successRead: 1,
     successWrite: 1,
     latencyReadMs: 0,
@@ -44,11 +58,20 @@ export function createNodeRuntime(node: DesignNode): NodeRuntime {
   };
 }
 
-/** Removes faults whose duration has elapsed. */
+/** Removes faults and warm-up penalties whose time has passed. */
 export function expireFaults(runtime: NodeRuntime, nowMs: number): void {
   for (const [kind, active] of runtime.faults) {
     if (active.untilMs !== null && nowMs >= active.untilMs) runtime.faults.delete(kind);
   }
+  if (runtime.warming.length > 0)
+    runtime.warming = runtime.warming.filter((w) => w.untilMs > nowMs);
+}
+
+/** Fraction of instances still warming up after a scale-out. */
+export function coldFraction(runtime: NodeRuntime): number {
+  if (runtime.warming.length === 0) return 0;
+  const warming = runtime.warming.reduce((sum, w) => sum + w.count, 0);
+  return Math.min(1, warming / Math.max(1, runtime.instances));
 }
 
 export function clearBacklog(runtime: NodeRuntime): void {

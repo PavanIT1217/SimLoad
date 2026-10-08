@@ -1,13 +1,15 @@
 import type { CompiledGraph } from '../model/graph';
 import { lognormalExceedance, lognormalMean } from '../util/math';
-import { callerWaitMs, isAsync, isCaching, retryFactor, successWithRetries } from './components';
+import type { RequestClass } from '../model/types';
+import { callerWaitMs, isAsync, isCaching } from './components';
 import type { FlowResult, NodeFlow } from './flow';
+import { breakerAdmit, retryPlan } from './resilience';
 import type { NodeRuntime } from './state';
 
 /** Latency of a fast failure (connection refused, queue full). */
 export const FAST_FAIL_MS = 0.5;
 
-export type RequestClass = 'read' | 'write';
+export type { RequestClass } from '../model/types';
 
 /** End-to-end outcome of calling a node, as seen by its callers. */
 export interface ClassOutcome {
@@ -41,9 +43,10 @@ function classOutcome(
   const drop = pool ? (cls === 'read' ? pool.dropRead : pool.dropWrite) : 0;
   const waitMs = callerWaitMs(node, pool?.result.waitMs ?? 0);
   const base = node.kind === 'client' ? 0 : cfg.baseLatencyMs;
-  const localLatencyMs = lognormalMean(base, cfg.latencySigma) + waitMs + flow.injectedMs;
+  const coldMs = flow.coldFraction * cfg.coldStartMs;
+  const localLatencyMs = lognormalMean(base, cfg.latencySigma) + waitMs + flow.injectedMs + coldMs;
 
-  const routes = graph.routes.get(node.id) ?? [];
+  const routes = graph.routes.get(node.id)?.[cls] ?? [];
   let continuation = routes.length > 0 ? 1 : 0;
   if (isAsync(node)) continuation = 0;
   else if (isCaching(node) && cls === 'read') continuation *= 1 - flow.hitRatio;
@@ -54,10 +57,15 @@ function classOutcome(
     downstreamSuccess = 0;
     for (const route of routes) {
       const child = runtimes.get(route.target) as NodeRuntime;
-      const s = cls === 'read' ? child.successRead : child.successWrite;
-      const l = cls === 'read' ? child.latencyReadMs : child.latencyWriteMs;
-      downstreamSuccess += route.share * successWithRetries(s, cfg.retries);
-      downstreamLatency += route.share * l * (1 + retryFactor(1 - s, cfg.retries));
+      // An open breaker fails a share of calls instantly instead of sending them.
+      const admit = breakerAdmit(child);
+      const s = admit * (cls === 'read' ? child.successRead : child.successWrite);
+      const l =
+        admit * (cls === 'read' ? child.latencyReadMs : child.latencyWriteMs) +
+        (1 - admit) * FAST_FAIL_MS;
+      const plan = retryPlan(s, cfg.retries, cfg.retryBudget, cfg.retryBackoffMs);
+      downstreamSuccess += route.share * plan.success;
+      downstreamLatency += route.share * (l * (1 + plan.extra) + plan.delayMs);
     }
   }
   const expectedDownstream = continuation * downstreamLatency;
@@ -66,7 +74,7 @@ function classOutcome(
       ? lognormalExceedance(
           base,
           cfg.latencySigma,
-          waitMs + flow.injectedMs + expectedDownstream,
+          waitMs + flow.injectedMs + coldMs + expectedDownstream,
           cfg.timeoutMs,
         )
       : 0;

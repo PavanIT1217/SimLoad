@@ -2,11 +2,14 @@ import type { CompiledGraph } from '../model/graph';
 import type { Rng } from '../util/rng';
 import { callerWaitMs, isAsync, isCaching } from './components';
 import type { FlowResult, NodeFlow } from './flow';
+import { callSuccess } from './flow';
+import { retryPlan } from './resilience';
+import type { NodeRuntime } from './state';
 import type { RequestClass } from './propagation';
 import { FAST_FAIL_MS } from './propagation';
 
 export type SpanOutcome =
-  'ok' | 'hit' | 'enqueued' | 'dropped' | 'timeout' | 'error' | 'unavailable';
+  'ok' | 'hit' | 'enqueued' | 'dropped' | 'timeout' | 'error' | 'unavailable' | 'rejected';
 
 export interface TraceSpan {
   nodeId: string;
@@ -32,6 +35,7 @@ export const MAX_VISITS_PER_REQUEST = 64;
 interface WalkContext {
   graph: CompiledGraph;
   flows: FlowResult;
+  runtimes: Map<string, NodeRuntime>;
   rng: Rng;
   cls: RequestClass;
   spans: TraceSpan[];
@@ -63,27 +67,41 @@ function walk(
   };
 
   if (flow.failed || ctx.visits > MAX_VISITS_PER_REQUEST) return fail('unavailable', FAST_FAIL_MS);
+  if (flow.admit < 1 && ctx.rng.next() >= flow.admit) return fail('rejected', FAST_FAIL_MS);
   const pool = ctx.cls === 'read' ? flow.readPool : flow.writePool;
   const dropProb = pool ? (ctx.cls === 'read' ? pool.dropRead : pool.dropWrite) : 0;
   if (dropProb > 0 && ctx.rng.next() < dropProb) return fail('dropped', FAST_FAIL_MS);
 
   const service =
     node.kind === 'client' ? 0 : ctx.rng.lognormal(cfg.baseLatencyMs, cfg.latencySigma);
-  const local = service + callerWaitMs(node, pool?.result.waitMs ?? 0) + flow.injectedMs;
+  const cold = flow.coldFraction > 0 && ctx.rng.next() < flow.coldFraction ? cfg.coldStartMs : 0;
+  const local = service + callerWaitMs(node, pool?.result.waitMs ?? 0) + flow.injectedMs + cold;
   if (flow.errorRate > 0 && ctx.rng.next() < flow.errorRate) return fail('error', local);
 
   let downstream = 0;
   let ok = true;
-  const routes = ctx.graph.routes.get(nodeId) ?? [];
+  const routes = ctx.graph.routes.get(nodeId)?.[ctx.cls] ?? [];
   if (isCaching(node) && ctx.cls === 'read' && ctx.rng.next() < flow.hitRatio) {
     span.outcome = 'hit';
   } else if (isAsync(node)) {
     span.outcome = 'enqueued';
   } else if (routes.length > 0) {
-    const route = routes[ctx.rng.weightedIndex(ctx.graph.shares.get(nodeId) ?? [])];
+    const route = routes[ctx.rng.weightedIndex(ctx.graph.shares.get(nodeId)?.[ctx.cls] ?? [])];
     if (route) {
       ok = false;
+      const target = ctx.runtimes.get(route.target) as NodeRuntime;
+      const plan = retryPlan(
+        callSuccess(target, ctx.cls),
+        cfg.retries,
+        cfg.retryBudget,
+        cfg.retryBackoffMs,
+      );
       for (let a = 0; a <= cfg.retries && !ok; a++) {
+        if (a > 0) {
+          // The retry budget may deny this retry; otherwise wait with jittered backoff.
+          if (plan.allowed < 1 && ctx.rng.next() >= plan.allowed) break;
+          downstream += ctx.rng.next() * cfg.retryBackoffMs * Math.pow(2, a - 1);
+        }
         const child = walk(ctx, route.target, depth + 1, startMs + local + downstream, a);
         downstream += child.durationMs;
         ok = child.ok;
@@ -111,6 +129,7 @@ function walk(
 export function sampleRequests(
   graph: CompiledGraph,
   flows: FlowResult,
+  runtimes: Map<string, NodeRuntime>,
   rng: Rng,
   count: number,
   readRatio: number,
@@ -121,7 +140,7 @@ export function sampleRequests(
   for (let i = 0; i < count; i++) {
     const client = graph.clients[Math.floor(rng.next() * graph.clients.length)] as string;
     const cls: RequestClass = rng.next() < readRatio ? 'read' : 'write';
-    const ctx: WalkContext = { graph, flows, rng, cls, spans: [], visits: 0 };
+    const ctx: WalkContext = { graph, flows, runtimes, rng, cls, spans: [], visits: 0 };
     const result = walk(ctx, client, 0, 0, 0);
     traces.push({
       id: firstId + i,

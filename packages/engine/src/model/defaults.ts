@@ -3,6 +3,7 @@ import type {
   Design,
   DesignEdge,
   DesignNode,
+  EdgeTraffic,
   NodeConfig,
   Position,
   SimulationOptions,
@@ -21,6 +22,15 @@ const BASE_CONFIG: NodeConfig = {
   hitRatio: 0,
   replicas: 0,
   consumerRps: 0,
+  retryBackoffMs: 0,
+  retryBudget: 0,
+  rateLimitRps: 0,
+  shards: 1,
+  hotKeySkew: 0,
+  coldStartMs: 0,
+  costPerHour: 0,
+  costPerMillion: 0,
+  circuitBreaker: { enabled: false, errorThreshold: 0.5, openMs: 5_000 },
   autoscale: {
     enabled: false,
     delayMs: 30_000,
@@ -33,6 +43,7 @@ const BASE_CONFIG: NodeConfig = {
 const KIND_OVERRIDES: Record<ComponentKind, Partial<NodeConfig>> = {
   client: { capacityRps: 0, baseLatencyMs: 0, latencySigma: 0, timeoutMs: 5_000, retries: 0 },
   cdn: {
+    costPerMillion: 0.75,
     capacityRps: 100_000,
     instances: 50,
     baseLatencyMs: 15,
@@ -41,6 +52,8 @@ const KIND_OVERRIDES: Record<ComponentKind, Partial<NodeConfig>> = {
     hitRatio: 0.9,
   },
   loadBalancer: {
+    costPerHour: 0.03,
+    costPerMillion: 0.05,
     capacityRps: 50_000,
     instances: 2,
     baseLatencyMs: 1,
@@ -48,8 +61,15 @@ const KIND_OVERRIDES: Record<ComponentKind, Partial<NodeConfig>> = {
     maxConcurrency: 10_000,
     maxQueue: 10_000,
   },
-  service: { capacityRps: 2_000, instances: 4, baseLatencyMs: 20, maxConcurrency: 200 },
+  service: {
+    costPerHour: 0.1,
+    capacityRps: 2_000,
+    instances: 4,
+    baseLatencyMs: 20,
+    maxConcurrency: 200,
+  },
   cache: {
+    costPerHour: 0.17,
     capacityRps: 100_000,
     instances: 3,
     baseLatencyMs: 1,
@@ -60,6 +80,7 @@ const KIND_OVERRIDES: Record<ComponentKind, Partial<NodeConfig>> = {
     hitRatio: 0.8,
   },
   queue: {
+    costPerMillion: 0.4,
     capacityRps: 1_000_000,
     baseLatencyMs: 3,
     maxConcurrency: 100_000,
@@ -67,6 +88,7 @@ const KIND_OVERRIDES: Record<ComponentKind, Partial<NodeConfig>> = {
     consumerRps: 5_000,
   },
   database: {
+    costPerHour: 0.5,
     capacityRps: 5_000,
     baseLatencyMs: 5,
     latencySigma: 0.5,
@@ -76,6 +98,7 @@ const KIND_OVERRIDES: Record<ComponentKind, Partial<NodeConfig>> = {
     replicas: 0,
   },
   externalApi: {
+    costPerMillion: 1,
     capacityRps: 500,
     baseLatencyMs: 120,
     latencySigma: 0.6,
@@ -113,7 +136,11 @@ export const DEFAULT_OPTIONS: SimulationOptions = {
 /** Default configuration for a component kind (a fresh copy). */
 export function defaultConfig(kind: ComponentKind): NodeConfig {
   const base: NodeConfig = { ...BASE_CONFIG, ...KIND_OVERRIDES[kind] };
-  return { ...base, autoscale: { ...BASE_CONFIG.autoscale } };
+  return {
+    ...base,
+    autoscale: { ...BASE_CONFIG.autoscale },
+    circuitBreaker: { ...BASE_CONFIG.circuitBreaker },
+  };
 }
 
 /** Builds a node with default config; `overrides` are merged on top. */
@@ -127,8 +154,14 @@ export function createNode(
   return { id, kind, label, position, config: { ...defaultConfig(kind), ...overrides } };
 }
 
-export function createEdge(source: string, target: string, weight = 1): DesignEdge {
-  return { id: `${source}->${target}`, source, target, weight };
+export function createEdge(
+  source: string,
+  target: string,
+  weight = 1,
+  traffic: EdgeTraffic = 'all',
+): DesignEdge {
+  const suffix = traffic === 'all' ? '' : `:${traffic}`;
+  return { id: `${source}->${target}${suffix}`, source, target, weight, traffic };
 }
 
 export function createDesign(

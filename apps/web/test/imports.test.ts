@@ -1,4 +1,4 @@
-import { createRng, validateDesign } from '@syssim/engine';
+import { createRng, validateDesign } from '@simload/engine';
 import { deflateRawSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { importLoadTest } from '../src/features/inspector/loadTestImport';

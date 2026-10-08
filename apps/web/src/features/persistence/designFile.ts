@@ -1,4 +1,4 @@
-import type { Design } from '@syssim/engine';
+import type { Design } from '@simload/engine';
 import { importDesignFile } from './fileImport';
 
 export function designFileName(design: Design): string {
@@ -6,7 +6,7 @@ export function designFileName(design: Design): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-  return `${slug || 'design'}.syssim.json`;
+  return `${slug || 'design'}.simload.json`;
 }
 
 /** Triggers a browser download of the design as pretty-printed JSON. */

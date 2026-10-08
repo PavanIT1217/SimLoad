@@ -1,4 +1,4 @@
-import { createDesign, createEdge, createNode } from '@syssim/engine';
+import { createDesign, createEdge, createNode } from '@simload/engine';
 import { describe, expect, it } from 'vitest';
 import { parseLatencyCsv } from '../src/features/inspector/csv';
 import { designFileName } from '../src/features/persistence/designFile';
@@ -68,7 +68,7 @@ describe('parseDesign', () => {
   });
 
   it('builds a safe file name', () => {
-    expect(designFileName(sample)).toBe('caf-design.syssim.json');
+    expect(designFileName(sample)).toBe('caf-design.simload.json');
   });
 });
 

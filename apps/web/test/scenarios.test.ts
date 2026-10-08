@@ -1,5 +1,5 @@
-import { createGoalTracker, createSimulation, hasErrors, validateDesign } from '@syssim/engine';
-import type { Design, GoalStatus } from '@syssim/engine';
+import { createGoalTracker, createSimulation, hasErrors, validateDesign } from '@simload/engine';
+import type { Design, GoalStatus } from '@simload/engine';
 import { describe, expect, it } from 'vitest';
 import { SCENARIOS } from '../src/features/scenarios';
 import { applyDueChaos } from '../src/features/scenarios/chaos';

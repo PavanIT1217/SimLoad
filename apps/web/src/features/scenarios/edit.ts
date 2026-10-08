@@ -1,5 +1,5 @@
-import { createEdge } from '@syssim/engine';
-import type { Design, DesignNode, EdgeTraffic, NodeConfig } from '@syssim/engine';
+import { createEdge } from '@simload/engine';
+import type { Design, DesignNode, EdgeTraffic, NodeConfig } from '@simload/engine';
 
 /** Small helpers for deriving reference solutions from starting designs. */
 export function tune(design: Design, id: string, patch: Partial<NodeConfig>): Design {

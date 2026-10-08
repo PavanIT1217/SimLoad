@@ -1,4 +1,4 @@
-import type { Design } from '@syssim/engine';
+import type { Design } from '@simload/engine';
 import { parseDesign } from './schema';
 
 /** Compressed links use `#z=`; `#design=` (uncompressed) links from v1 still open. */

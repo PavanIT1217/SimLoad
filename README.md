@@ -1,6 +1,6 @@
-# System Design Simulator
+# SimLoad
 
-Simulate how a system architecture behaves under traffic from **1 req/s up to
+A system design simulator. Simulate how a system architecture behaves under traffic from **1 req/s up to
 100M req/s** ("earth scale"), entirely in your browser. Draw a design, turn up
 the load, and watch queues build, latency climb, caches save you and retry
 storms take you down.
@@ -72,7 +72,7 @@ latency and capacity).
 **Editing and sharing**
 
 - Undo/redo, copy/paste/duplicate and one-click layered auto-layout.
-- Import from SysSim JSON, Mermaid flowcharts or draw.io files. Component
+- Import from SimLoad JSON, Mermaid flowcharts or draw.io files. Component
   kinds are inferred from labels and shapes.
 - Export JSON, a Markdown report, or a printable PDF report with an
   architecture diagram, charts and findings.
@@ -138,7 +138,7 @@ Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Using the engine directly
 
 ```ts
-import { createDesign, createEdge, createNode, createSimulation } from '@syssim/engine';
+import { createDesign, createEdge, createNode, createSimulation } from '@simload/engine';
 
 const design = createDesign(
   'demo',

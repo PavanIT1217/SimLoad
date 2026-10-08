@@ -18,7 +18,7 @@ export function TopBar() {
       <div className="brand">
         <Logo active={running} />
         <span className="brand-text">
-          <span className="brand-name">SYS//SIM</span>
+          <span className="brand-name">SIM//LOAD</span>
           <span className="brand-sub">System design simulator</span>
         </span>
         <span className={`status-chip ${running ? 'is-live' : ''}`}>

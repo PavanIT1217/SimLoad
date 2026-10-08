@@ -1,4 +1,4 @@
-// Public API of @syssim/engine. Everything consumers may use is exported here.
+// Public API of @simload/engine. Everything consumers may use is exported here.
 
 export type {
   AutoscaleConfig,

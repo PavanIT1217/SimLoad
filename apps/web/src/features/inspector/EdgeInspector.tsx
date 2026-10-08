@@ -1,5 +1,5 @@
-import { edgeCarries } from '@syssim/engine';
-import type { DesignEdge, EdgeTraffic } from '@syssim/engine';
+import { edgeCarries } from '@simload/engine';
+import type { DesignEdge, EdgeTraffic } from '@simload/engine';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';
 import { Button } from '../../ui/Button';

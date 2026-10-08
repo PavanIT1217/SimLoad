@@ -1,4 +1,4 @@
-import type { Design, PlanEvaluation, PlanResult, ScenarioGoal } from '@syssim/engine';
+import type { Design, PlanEvaluation, PlanResult, ScenarioGoal } from '@simload/engine';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PlannerResponse } from './protocol';
 

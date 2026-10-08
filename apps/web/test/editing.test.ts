@@ -1,4 +1,4 @@
-import { createDesign, createEdge, createNode } from '@syssim/engine';
+import { createDesign, createEdge, createNode } from '@simload/engine';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { LAYER_GAP, autoLayout } from '../src/features/canvas/autoLayout';
 import { useDesignStore } from '../src/state/designStore';

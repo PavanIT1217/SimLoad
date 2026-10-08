@@ -1,9 +1,9 @@
-import type { Design } from '@syssim/engine';
+import type { Design } from '@simload/engine';
 import { parseDesignJson } from './schema';
 import { readStorage, writeStorage } from './storage';
 
-const AUTOSAVE_KEY = 'syssim:design:v1';
-const SCENARIO_KEY = 'syssim:scenario:v1';
+const AUTOSAVE_KEY = 'simload:design:v1';
+const SCENARIO_KEY = 'simload:scenario:v1';
 
 export interface SavedSession {
   design: Design;

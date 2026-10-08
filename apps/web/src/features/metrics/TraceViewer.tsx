@@ -1,4 +1,4 @@
-import type { RequestTrace, SpanOutcome } from '@syssim/engine';
+import type { RequestTrace, SpanOutcome } from '@simload/engine';
 import { useState } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';

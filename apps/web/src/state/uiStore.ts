@@ -6,7 +6,7 @@ export type Mode = 'prep' | 'validation';
 export type RightTab = 'inspect' | 'insights' | 'plan' | 'calc';
 export type DockTab = 'live' | 'compare';
 
-const THEME_KEY = 'syssim:theme';
+const THEME_KEY = 'simload:theme';
 
 function initialTheme(): Theme {
   const stored = readStorage(THEME_KEY);

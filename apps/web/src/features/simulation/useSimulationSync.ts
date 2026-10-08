@@ -1,5 +1,5 @@
-import { hasErrors, validateDesign } from '@syssim/engine';
-import type { Design } from '@syssim/engine';
+import { hasErrors, validateDesign } from '@simload/engine';
+import type { Design } from '@simload/engine';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';

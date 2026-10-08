@@ -1,4 +1,4 @@
-import type { Simulation } from '@syssim/engine';
+import type { Simulation } from '@simload/engine';
 import type { ScenarioChaos } from './types';
 
 /**

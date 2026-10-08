@@ -1,5 +1,5 @@
 import { BaseEdge, EdgeLabelRenderer, getBezierPath } from '@xyflow/react';
-import type { EdgeTraffic } from '@syssim/engine';
+import type { EdgeTraffic } from '@simload/engine';
 import type { Edge, EdgeProps } from '@xyflow/react';
 import { memo } from 'react';
 import { useSimStore } from '../../state/simStore';

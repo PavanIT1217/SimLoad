@@ -1,5 +1,5 @@
-import { perInstanceCapacity } from '@syssim/engine';
-import type { AutoscaleConfig, CircuitBreakerConfig, DesignNode } from '@syssim/engine';
+import { perInstanceCapacity } from '@simload/engine';
+import type { AutoscaleConfig, CircuitBreakerConfig, DesignNode } from '@simload/engine';
 import { useDesignStore } from '../../state/designStore';
 import { Field, NumberInput, Toggle } from '../../ui/Field';
 import { formatRps } from '../../ui/format';

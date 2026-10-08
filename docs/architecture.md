@@ -6,7 +6,7 @@
 │     ▲                                                │ WorkerRequest    │
 │     │ frames (TickResult, chart points, goal)        ▼                  │
 │  ┌──┴───────────── simulation.worker.ts (Web Worker) ───────────────┐   │
-│  │   @syssim/engine: createSimulation() + createGoalTracker()      │   │
+│  │   @simload/engine: createSimulation() + createGoalTracker()      │   │
 │  └─────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────┘
 ```

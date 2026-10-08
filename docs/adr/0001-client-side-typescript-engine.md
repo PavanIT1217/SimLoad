@@ -14,7 +14,7 @@ GitHub Pages. We considered:
 ## Decision
 
 Write the engine in strict TypeScript as a standalone package
-(`@syssim/engine`) with no DOM dependencies, and run it in a Web Worker.
+(`@simload/engine`) with no DOM dependencies, and run it in a Web Worker.
 
 ## Consequences
 

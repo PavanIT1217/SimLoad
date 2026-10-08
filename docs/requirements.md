@@ -1,4 +1,4 @@
-# Requirements: System Design Simulator v1
+# Requirements: SimLoad (system design simulator) v1
 
 ## Purpose
 

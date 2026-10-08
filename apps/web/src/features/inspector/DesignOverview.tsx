@@ -1,4 +1,4 @@
-import { validateDesign } from '@syssim/engine';
+import { validateDesign } from '@simload/engine';
 import { useMemo } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';

@@ -1,5 +1,5 @@
-import { createDesign, createEdge, createNode } from '@syssim/engine';
-import type { ComponentKind, Design, DesignEdge, DesignNode } from '@syssim/engine';
+import { createDesign, createEdge, createNode } from '@simload/engine';
+import type { ComponentKind, Design, DesignEdge, DesignNode } from '@simload/engine';
 import { inferKind } from './kindInference';
 import { DesignParseError } from './schema';
 

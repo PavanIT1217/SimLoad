@@ -1,5 +1,5 @@
 {
-  "name": "@syssim/engine",
+  "name": "@simload/engine",
   "version": "0.1.0",
   "private": true,
   "description": "Deterministic hybrid flow + sampled simulation engine for system designs.",

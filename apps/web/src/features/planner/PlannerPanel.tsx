@@ -1,4 +1,4 @@
-import type { PlanChange, PlanEvaluation, ScenarioGoal } from '@syssim/engine';
+import type { PlanChange, PlanEvaluation, ScenarioGoal } from '@simload/engine';
 import { useState } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useUiStore } from '../../state/uiStore';

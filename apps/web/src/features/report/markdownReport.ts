@@ -9,7 +9,7 @@ export function buildMarkdownReport(data: ReportData): string {
   const lines: string[] = [
     `# ${design.name}`,
     '',
-    `_System Design Simulator report · ${data.generatedAt.toISOString()}_`,
+    `_SimLoad report · ${data.generatedAt.toISOString()}_`,
     '',
     '## Summary',
     '',

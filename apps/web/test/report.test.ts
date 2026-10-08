@@ -1,4 +1,4 @@
-import { createSimulation } from '@syssim/engine';
+import { createSimulation } from '@simload/engine';
 import { describe, expect, it } from 'vitest';
 import { designSvg } from '../src/features/report/designSvg';
 import { buildMarkdownReport } from '../src/features/report/markdownReport';

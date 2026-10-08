@@ -1,4 +1,4 @@
-import type { Design } from '@syssim/engine';
+import type { Design } from '@simload/engine';
 
 /** Undo steps kept in memory. */
 export const HISTORY_LIMIT = 100;

@@ -1,5 +1,5 @@
-import { diagnose } from '@syssim/engine';
-import type { Insight, InsightSeverity } from '@syssim/engine';
+import { diagnose } from '@simload/engine';
+import type { Insight, InsightSeverity } from '@simload/engine';
 import { useMemo } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';

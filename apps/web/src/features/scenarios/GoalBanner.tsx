@@ -1,5 +1,5 @@
-import { describeGoal } from '@syssim/engine';
-import type { GoalStatus } from '@syssim/engine';
+import { describeGoal } from '@simload/engine';
+import type { GoalStatus } from '@simload/engine';
 import { useState } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';

@@ -3,7 +3,7 @@ import type { ChartPoint } from '../features/simulation/protocol';
 import { readStorage, writeStorage } from '../features/persistence/storage';
 
 export const MAX_RUNS = 4;
-const STORAGE_KEY = 'syssim:runs:v1';
+const STORAGE_KEY = 'simload:runs:v1';
 
 export interface RunPoint {
   /** Seconds since the start of the recording. */

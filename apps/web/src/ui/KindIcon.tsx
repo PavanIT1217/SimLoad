@@ -1,4 +1,4 @@
-import type { ComponentKind } from '@syssim/engine';
+import type { ComponentKind } from '@simload/engine';
 
 const PATHS: Record<ComponentKind, string> = {
   client: 'M4 5h16v10H4zM9 19h6M12 15v4',

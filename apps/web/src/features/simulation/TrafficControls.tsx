@@ -1,5 +1,5 @@
-import { PROFILE_LABELS, TRAFFIC_PROFILES, rpsToSlider, sliderToRps } from '@syssim/engine';
-import type { TrafficProfile } from '@syssim/engine';
+import { PROFILE_LABELS, TRAFFIC_PROFILES, rpsToSlider, sliderToRps } from '@simload/engine';
+import type { TrafficProfile } from '@simload/engine';
 import { useDesignStore } from '../../state/designStore';
 import { formatRps } from '../../ui/format';
 

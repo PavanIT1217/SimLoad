@@ -1,4 +1,4 @@
-import type { TickResult } from '@syssim/engine';
+import type { TickResult } from '@simload/engine';
 import type { ChartPoint, NodeSnapshot } from './protocol';
 
 /** Averages a batch of ticks into one chart point. */

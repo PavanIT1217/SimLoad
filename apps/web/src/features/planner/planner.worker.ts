@@ -1,5 +1,5 @@
 // Runs the capacity search off the main thread (and off the live simulation worker).
-import { planCapacity } from '@syssim/engine';
+import { planCapacity } from '@simload/engine';
 import type { PlannerRequest, PlannerResponse } from './protocol';
 
 const post = (message: PlannerResponse) => self.postMessage(message);

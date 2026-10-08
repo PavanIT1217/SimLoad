@@ -1,4 +1,4 @@
-import type { ComponentKind, NodeConfig } from '@syssim/engine';
+import type { ComponentKind, NodeConfig } from '@simload/engine';
 
 type NumericKey = Exclude<keyof NodeConfig, 'autoscale' | 'circuitBreaker'>;
 

@@ -1,4 +1,4 @@
-import { createDesign, createEdge, createNode } from '@syssim/engine';
+import { createDesign, createEdge, createNode } from '@simload/engine';
 import { addNode, connect, removeEdge, solved, tune } from './edit';
 import type { Scenario } from './types';
 

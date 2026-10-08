@@ -1,4 +1,4 @@
-import type { Design, PlanEvaluation, PlanResult, ScenarioGoal } from '@syssim/engine';
+import type { Design, PlanEvaluation, PlanResult, ScenarioGoal } from '@simload/engine';
 
 export type PlannerRequest = { type: 'plan'; design: Design; goal: ScenarioGoal; seconds: number };
 

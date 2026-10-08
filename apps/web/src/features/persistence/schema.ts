@@ -1,4 +1,4 @@
-import { COMPONENT_KINDS, DEFAULT_TRAFFIC, TRAFFIC_PROFILES, defaultConfig } from '@syssim/engine';
+import { COMPONENT_KINDS, DEFAULT_TRAFFIC, TRAFFIC_PROFILES, defaultConfig } from '@simload/engine';
 import type {
   ComponentKind,
   Design,
@@ -6,7 +6,7 @@ import type {
   DesignNode,
   NodeConfig,
   TrafficSettings,
-} from '@syssim/engine';
+} from '@simload/engine';
 
 export class DesignParseError extends Error {
   constructor(message: string) {

@@ -1,5 +1,5 @@
-import { COMPONENT_KINDS, KIND_LABELS } from '@syssim/engine';
-import type { ComponentKind } from '@syssim/engine';
+import { COMPONENT_KINDS, KIND_LABELS } from '@simload/engine';
+import type { ComponentKind } from '@simload/engine';
 import type { DragEvent } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { KindIcon } from '../../ui/KindIcon';

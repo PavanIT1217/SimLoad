@@ -1,4 +1,4 @@
-import type { Design, ScenarioGoal } from '@syssim/engine';
+import type { Design, ScenarioGoal } from '@simload/engine';
 
 /** A scripted fault that fires during a scenario run (e.g. a zone outage). */
 export interface ScenarioChaos {

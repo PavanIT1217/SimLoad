@@ -36,7 +36,7 @@ export function ReportButtons() {
           const data = currentReport();
           download(
             buildMarkdownReport(data),
-            designFileName(data.design).replace('.syssim.json', '.report.md'),
+            designFileName(data.design).replace('.simload.json', '.report.md'),
             'text/markdown',
           );
         }}

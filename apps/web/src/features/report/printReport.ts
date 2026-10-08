@@ -44,7 +44,7 @@ export function buildHtmlReport(data: ReportData, charts = ''): string {
     )
     .join('');
   return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(data.design.name)} — report</title><style>${STYLES}</style></head><body>
-<h1>${esc(data.design.name)}</h1><div class="meta">System Design Simulator · ${data.generatedAt.toLocaleString()}</div>
+<h1>${esc(data.design.name)}</h1><div class="meta">SimLoad · ${data.generatedAt.toLocaleString()}</div>
 <h2>Summary</h2><ul>${summaryLines(data)
     .map((l) => `<li>${esc(l)}</li>`)
     .join('')}</ul>

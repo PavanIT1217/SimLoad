@@ -1,4 +1,4 @@
-import type { NodeTickState } from '@syssim/engine';
+import type { NodeTickState } from '@simload/engine';
 import { formatCompact, formatMs } from '../../ui/format';
 
 export interface EquationsProps {

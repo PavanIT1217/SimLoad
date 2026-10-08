@@ -1,5 +1,5 @@
-import { fitFromPercentiles } from '@syssim/engine';
-import type { DesignNode, LatencyFit } from '@syssim/engine';
+import { fitFromPercentiles } from '@simload/engine';
+import type { DesignNode, LatencyFit } from '@simload/engine';
 import type { ChangeEvent } from 'react';
 import { useState } from 'react';
 import { useDesignStore } from '../../state/designStore';

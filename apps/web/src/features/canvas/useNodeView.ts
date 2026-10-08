@@ -1,4 +1,4 @@
-import type { FaultKind } from '@syssim/engine';
+import type { FaultKind } from '@simload/engine';
 import { useSimStore } from '../../state/simStore';
 
 /** What a canvas node displays, from the live tick or a replayed snapshot. */

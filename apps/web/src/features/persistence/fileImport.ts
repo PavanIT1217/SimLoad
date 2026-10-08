@@ -1,4 +1,4 @@
-import type { Design } from '@syssim/engine';
+import type { Design } from '@simload/engine';
 import { autoLayout } from '../canvas/autoLayout';
 import { diagramToDesign, parseDrawio, parseMermaid } from './diagramImport';
 import { parseDesignJson } from './schema';
@@ -14,7 +14,7 @@ export function detectFormat(text: string): ImportFormat {
 }
 
 /**
- * Imports a design from SysSim JSON, a Mermaid flowchart or a draw.io file.
+ * Imports a design from SimLoad JSON, a Mermaid flowchart or a draw.io file.
  * Diagram imports get default component settings and an automatic layout
  * (draw.io keeps its own positions when it has them).
  */

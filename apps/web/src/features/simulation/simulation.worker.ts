@@ -1,6 +1,6 @@
 // Runs the engine off the main thread so the UI stays responsive at any speed.
-import { createGoalTracker, createSimulation, estimateCost } from '@syssim/engine';
-import type { GoalTracker, Simulation, TickResult } from '@syssim/engine';
+import { createGoalTracker, createSimulation, estimateCost } from '@simload/engine';
+import type { GoalTracker, Simulation, TickResult } from '@simload/engine';
 import { applyDueChaos } from '../scenarios/chaos';
 import type { ScenarioChaos } from '../scenarios/types';
 import { toChartPoint } from './aggregate';

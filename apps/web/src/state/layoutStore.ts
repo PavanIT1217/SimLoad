@@ -23,7 +23,7 @@ export const PANEL_VARS: Record<PanelId, string> = {
   metrics: '--metrics-h',
 };
 
-const STORAGE_KEY = 'syssim:layout:v1';
+const STORAGE_KEY = 'simload:layout:v1';
 
 export interface LayoutState {
   sizes: Record<PanelId, number>;

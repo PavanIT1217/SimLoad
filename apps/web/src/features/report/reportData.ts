@@ -1,5 +1,5 @@
-import { describeGoal, diagnose, estimateCost, KIND_LABELS } from '@syssim/engine';
-import type { CostBreakdown, Design, GoalStatus, Insight, TickResult } from '@syssim/engine';
+import { describeGoal, diagnose, estimateCost, KIND_LABELS } from '@simload/engine';
+import type { CostBreakdown, Design, GoalStatus, Insight, TickResult } from '@simload/engine';
 import type { Scenario } from '../scenarios/types';
 
 export interface ReportData {

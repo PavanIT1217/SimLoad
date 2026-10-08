@@ -1,4 +1,4 @@
-import type { DesignNode, NodeTickState } from '@syssim/engine';
+import type { DesignNode, NodeTickState } from '@simload/engine';
 import { useState } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useUiStore } from '../../state/uiStore';

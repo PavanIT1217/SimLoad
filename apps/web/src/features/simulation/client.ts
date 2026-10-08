@@ -1,4 +1,4 @@
-import type { Design, Fault, FaultKind, ScenarioGoal, TrafficSettings } from '@syssim/engine';
+import type { Design, Fault, FaultKind, ScenarioGoal, TrafficSettings } from '@simload/engine';
 import { useSimStore } from '../../state/simStore';
 import type { ScenarioChaos } from '../scenarios/types';
 import { FrameBuffer } from './frameBuffer';

@@ -1,4 +1,4 @@
-import type { GoalStatus, RequestTrace, TickResult } from '@syssim/engine';
+import type { GoalStatus, RequestTrace, TickResult } from '@simload/engine';
 import { create } from 'zustand';
 import type { ChartPoint } from '../features/simulation/protocol';
 

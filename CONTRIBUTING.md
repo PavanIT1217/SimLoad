@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve the System Design Simulator!
+Thanks for helping improve SimLoad!
 
 ## Setup
 

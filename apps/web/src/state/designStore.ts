@@ -1,4 +1,4 @@
-import { createEdge, createNode } from '@syssim/engine';
+import { createEdge, createNode } from '@simload/engine';
 import type {
   ComponentKind,
   Design,
@@ -7,7 +7,7 @@ import type {
   NodeConfig,
   Position,
   TrafficSettings,
-} from '@syssim/engine';
+} from '@simload/engine';
 import { create } from 'zustand';
 import type { HistoryState } from './history';
 import { createCoalescer, pushHistory } from './history';

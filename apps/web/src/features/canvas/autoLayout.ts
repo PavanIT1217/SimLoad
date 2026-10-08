@@ -1,5 +1,5 @@
-import { topologicalOrder } from '@syssim/engine';
-import type { Design, Position } from '@syssim/engine';
+import { topologicalOrder } from '@simload/engine';
+import type { Design, Position } from '@simload/engine';
 
 export const LAYER_GAP = 260;
 export const ROW_GAP = 130;

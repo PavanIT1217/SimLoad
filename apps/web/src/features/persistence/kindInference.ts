@@ -1,4 +1,4 @@
-import type { ComponentKind } from '@syssim/engine';
+import type { ComponentKind } from '@simload/engine';
 
 /** Keyword → component kind, checked in order (first match wins). */
 const RULES: [RegExp, ComponentKind][] = [

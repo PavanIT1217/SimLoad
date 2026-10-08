@@ -1,8 +1,8 @@
 {
-  "name": "syssim",
+  "name": "simload",
   "private": true,
   "version": "0.1.0",
-  "description": "System Design Simulator: simulate architectures from 1 req/s to earth scale in the browser.",
+  "description": "SimLoad: simulate architectures from 1 req/s to earth scale in the browser.",
   "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@10.28.0",
@@ -10,9 +10,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "pnpm --filter @syssim/web dev",
+    "dev": "pnpm --filter @simload/web dev",
     "build": "pnpm -r build",
-    "preview": "pnpm --filter @syssim/web preview",
+    "preview": "pnpm --filter @simload/web preview",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint . --max-warnings 0",

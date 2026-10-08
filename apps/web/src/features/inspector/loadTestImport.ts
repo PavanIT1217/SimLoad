@@ -1,5 +1,5 @@
-import { fitFromPercentile, fitLognormal } from '@syssim/engine';
-import type { LatencyFit } from '@syssim/engine';
+import { fitFromPercentile, fitLognormal } from '@simload/engine';
+import type { LatencyFit } from '@simload/engine';
 import { parseLatencyCsv } from './csv';
 
 export type LoadTestFormat = 'k6-summary' | 'k6-json' | 'gatling' | 'csv';

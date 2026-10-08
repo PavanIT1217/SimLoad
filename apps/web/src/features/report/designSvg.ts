@@ -1,4 +1,4 @@
-import type { Design, TickResult } from '@syssim/engine';
+import type { Design, TickResult } from '@simload/engine';
 
 const W = 180;
 const H = 56;

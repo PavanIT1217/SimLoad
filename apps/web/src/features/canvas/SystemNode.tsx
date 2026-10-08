@@ -1,5 +1,5 @@
-import { KIND_LABELS } from '@syssim/engine';
-import type { ComponentKind } from '@syssim/engine';
+import { KIND_LABELS } from '@simload/engine';
+import type { ComponentKind } from '@simload/engine';
 import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
 import { memo } from 'react';

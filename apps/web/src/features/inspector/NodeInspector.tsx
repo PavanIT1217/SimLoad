@@ -1,5 +1,5 @@
-import { KIND_LABELS } from '@syssim/engine';
-import type { DesignNode } from '@syssim/engine';
+import { KIND_LABELS } from '@simload/engine';
+import type { DesignNode } from '@simload/engine';
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';
 import { useUiStore } from '../../state/uiStore';

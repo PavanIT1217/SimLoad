@@ -6,7 +6,7 @@ import type {
   ScenarioGoal,
   TickResult,
   TrafficSettings,
-} from '@syssim/engine';
+} from '@simload/engine';
 import type { ScenarioChaos } from '../scenarios/types';
 
 /** One point on the live charts, aggregated over the ticks of one worker frame. */

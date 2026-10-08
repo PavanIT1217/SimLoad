@@ -22,12 +22,17 @@ function onDragStart(event: DragEvent, kind: ComponentKind) {
   event.dataTransfer.effectAllowed = 'copy';
 }
 
-export function Palette() {
+export interface PaletteProps {
+  /** Icon-only rail mode. */
+  collapsed?: boolean;
+}
+
+export function Palette({ collapsed = false }: PaletteProps) {
   const addNode = useDesignStore((s) => s.addNode);
   const count = useDesignStore((s) => s.design.nodes.length);
   return (
-    <nav className="palette" aria-label="Component palette">
-      <h2 className="panel-title">Components</h2>
+    <nav className={`palette ${collapsed ? 'is-collapsed' : ''}`} aria-label="Component palette">
+      <h2 className="panel-title">{collapsed ? 'Add' : 'Components'}</h2>
       <ul>
         {COMPONENT_KINDS.map((kind) => (
           <li key={kind}>
@@ -37,7 +42,8 @@ export function Palette() {
               draggable
               onDragStart={(e) => onDragStart(e, kind)}
               onClick={() => addNode(kind, { x: 80 + (count % 5) * 60, y: 60 + (count % 7) * 50 })}
-              title={`Drag onto the canvas (or click to add) a ${KIND_LABELS[kind]}`}
+              title={`${KIND_LABELS[kind]}: drag onto the canvas, or click to add`}
+              aria-label={`Add ${KIND_LABELS[kind]}`}
             >
               <span className={`palette-icon kind-${kind}`}>
                 <KindIcon kind={kind} />

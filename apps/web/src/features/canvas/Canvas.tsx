@@ -1,7 +1,6 @@
 import {
   Background,
   BackgroundVariant,
-  Controls,
   MiniMap,
   ReactFlow,
   ReactFlowProvider,
@@ -12,7 +11,9 @@ import '@xyflow/react/dist/style.css';
 import type { DragEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useDesignStore } from '../../state/designStore';
+import { useLayoutStore } from '../../state/layoutStore';
 import { useUiStore } from '../../state/uiStore';
+import { CanvasToolbar } from './CanvasToolbar';
 import { KIND_MIME, readDraggedKind } from './dnd';
 import type { SystemFlowEdge } from './FlowEdge';
 import { FlowEdge } from './FlowEdge';
@@ -31,6 +32,7 @@ function CanvasInner() {
   const selection = useDesignStore((s) => s.selection);
   const revision = useDesignStore((s) => s.revision);
   const theme = useUiStore((s) => s.theme);
+  const minimap = useLayoutStore((s) => s.minimap);
   const { screenToFlowPosition } = useReactFlow();
   // React Flow reports measured node sizes; keep them so controlled nodes stay visible.
   const [sizes, setSizes] = useState<Record<string, Size>>({});
@@ -106,39 +108,48 @@ function CanvasInner() {
   );
 
   return (
-    <div className="canvas" onDragOver={onDragOver} onDrop={onDrop}>
-      <ReactFlow
-        key={revision}
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={NODE_TYPES}
-        edgeTypes={EDGE_TYPES}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onPaneClick={() => useDesignStore.getState().select(null)}
-        colorMode={theme}
-        deleteKeyCode={['Backspace', 'Delete']}
-        fitView
-        fitViewOptions={{ padding: 0.2, maxZoom: 1.2 }}
-        minZoom={0.2}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background id="minor" variant={BackgroundVariant.Lines} gap={24} color="var(--grid)" />
-        <Background
-          id="major"
-          variant={BackgroundVariant.Lines}
-          gap={120}
-          color="var(--grid-major)"
-        />
-        <Controls showInteractive={false} />
-        <MiniMap pannable zoomable className="canvas-minimap" />
-      </ReactFlow>
-      {design.nodes.length === 0 && (
-        <div className="canvas-empty">
-          Drag components from the palette, or pick a scenario to start.
-        </div>
-      )}
+    <div className="canvas">
+      <CanvasToolbar />
+      <div className="canvas-flow" onDragOver={onDragOver} onDrop={onDrop}>
+        <ReactFlow
+          key={revision}
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={NODE_TYPES}
+          edgeTypes={EDGE_TYPES}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onPaneClick={() => useDesignStore.getState().select(null)}
+          colorMode={theme}
+          deleteKeyCode={['Backspace', 'Delete']}
+          fitView
+          fitViewOptions={{ padding: 0.2, maxZoom: 1.2 }}
+          minZoom={0.2}
+          proOptions={{ hideAttribution: true }}
+        >
+          <Background id="minor" variant={BackgroundVariant.Lines} gap={24} color="var(--grid)" />
+          <Background
+            id="major"
+            variant={BackgroundVariant.Lines}
+            gap={120}
+            color="var(--grid-major)"
+          />
+          {minimap && (
+            <MiniMap
+              pannable
+              zoomable
+              className="canvas-minimap"
+              style={{ width: 168, height: 104 }}
+            />
+          )}
+        </ReactFlow>
+        {design.nodes.length === 0 && (
+          <div className="canvas-empty">
+            Drag components from the palette, or pick a scenario to start.
+          </div>
+        )}
+      </div>
     </div>
   );
 }

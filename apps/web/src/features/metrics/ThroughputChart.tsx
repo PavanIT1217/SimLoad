@@ -28,7 +28,7 @@ function ThroughputChartView() {
   const last = history[history.length - 1];
   const chart = useMemo(
     () => (
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" debounce={120}>
         <LineChart data={history} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
           <CartesianGrid {...GRID_PROPS} />
           <XAxis dataKey="t" {...AXIS_PROPS} tickFormatter={timeTick} minTickGap={24} />

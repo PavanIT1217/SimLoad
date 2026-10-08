@@ -1,6 +1,12 @@
 .app {
+  --palette-w: 220px;
+  --inspector-w: 340px;
+  --metrics-h: 300px;
+  --splitter: 7px;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) 300px;
+  grid-template-rows: auto auto minmax(0, 1fr) var(--split-metrics, var(--splitter)) var(
+      --metrics-h
+    );
   grid-template-columns: minmax(0, 1fr);
   height: 100vh;
   height: 100dvh;
@@ -228,26 +234,144 @@
 /* ---------- Workspace ---------- */
 .workspace {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 340px;
+  grid-template-columns:
+    var(--palette-w) var(--splitter) minmax(0, 1fr) var(--split-inspector, var(--splitter))
+    var(--inspector-w);
   min-height: 0;
+}
+.workspace > :not(.splitter) {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.workspace > .palette,
+.workspace > .inspector {
+  overflow-y: auto;
+}
+/* While dragging a splitter: no transitions, no text selection, steady cursor. */
+.app.is-resizing {
+  user-select: none;
+}
+.app.is-resizing-x {
+  cursor: col-resize;
+}
+.app.is-resizing-y {
+  cursor: row-resize;
+}
+.app.is-resizing * {
+  transition: none !important;
+}
+
+/* ---------- Splitters ---------- */
+.splitter {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: var(--bg-sunken);
+  touch-action: none;
+  z-index: 5;
+}
+.splitter-x {
+  cursor: col-resize;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.splitter-y {
+  cursor: row-resize;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+/* Grip line that lights up on hover or while dragging. */
+.splitter::before {
+  content: '';
+  position: absolute;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.splitter-x::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+}
+.splitter-y::before {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+}
+.splitter:hover::before,
+.splitter:focus-visible::before,
+.app.is-resizing .splitter:active::before {
+  opacity: 0.8;
+  box-shadow: 0 0 6px var(--accent);
+}
+.splitter:focus-visible {
+  outline: none;
+}
+.splitter-toggle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--surface-solid);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.55;
+  transition:
+    opacity 120ms ease,
+    box-shadow 120ms ease;
+}
+.splitter-x .splitter-toggle {
+  width: 15px;
+  height: 34px;
+}
+.splitter-y .splitter-toggle {
+  width: 40px;
+  height: 15px;
+}
+.splitter:hover .splitter-toggle,
+.splitter.is-collapsed .splitter-toggle,
+.splitter-toggle:focus-visible {
+  opacity: 1;
+  box-shadow: var(--glow);
 }
 .workspace > .palette,
 .workspace > .inspector {
   background: var(--bg-elevated);
 }
-.workspace > .palette {
-  border-right: 1px solid var(--border);
-}
-.workspace > .inspector {
-  border-left: 1px solid var(--border);
-}
+
 .canvas-area {
   min-width: 0;
   min-height: 0;
 }
+
+/* ---------- Palette rail (collapsed) ---------- */
+.palette.is-collapsed {
+  padding: 10px 6px;
+  align-items: center;
+}
+.palette.is-collapsed .panel-title::before {
+  content: '';
+}
+.palette.is-collapsed .palette-text,
+.palette.is-collapsed .palette-tip {
+  display: none;
+}
+.palette.is-collapsed .palette-item {
+  justify-content: center;
+  padding: 6px;
+}
 .app > .metrics {
-  border-top: 1px solid var(--border);
   background: var(--bg-sunken);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .error-banner {
@@ -285,11 +409,6 @@
 }
 
 @media (max-width: 1400px) {
-  .app {
-    grid-template-rows: auto auto minmax(440px, 1fr) auto;
-    height: auto;
-    min-height: 100vh;
-  }
   .telemetry {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -298,16 +417,22 @@
   }
 }
 
-@media (max-width: 1100px) {
-  .workspace {
-    grid-template-columns: 180px minmax(0, 1fr) 300px;
-  }
-}
-
 @media (max-width: 900px) {
+  /* Phones and small tablets: stack the panels and scroll the page instead. */
+  .app {
+    grid-template-rows: auto auto auto 0 auto;
+    height: auto;
+    min-height: 100vh;
+  }
+  .splitter {
+    display: none;
+  }
   .workspace {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 60vh auto;
+    grid-template-rows: auto 0 60vh 0 auto;
+  }
+  .app > .metrics {
+    max-height: none;
   }
   .workspace > .palette {
     border-right: 0;

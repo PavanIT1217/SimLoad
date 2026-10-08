@@ -32,6 +32,12 @@ latency and capacity).
 - **Validation mode:** enter measured p50/p99 and capacity, or import a CSV of latency samples.
 - **Persistence:** autosave, JSON import/export, and shareable links that carry
   the design in the URL hash.
+- **Flexible workspace:**
+  - Drag the splitters to resize the palette, inspector and chart dock, or
+    collapse any of them.
+  - Focus mode (`F`) hides all panels; `[`, `]` and `\` toggle each panel.
+  - Zoom, fit and minimap controls sit in a toolbar above the canvas, not over it.
+  - The layout is remembered between visits.
 - 100% client-side: no backend, no accounts.
 
 ## Quick start

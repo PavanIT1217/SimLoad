@@ -4,6 +4,7 @@ import { callerWaitMs, isAsync, isCaching } from './components';
 import type { FlowResult, NodeFlow } from './flow';
 import { callSuccess } from './flow';
 import { retryPlan } from './resilience';
+import { liveRoutes } from './routing';
 import type { NodeRuntime } from './state';
 import type { RequestClass } from './propagation';
 import { FAST_FAIL_MS } from './propagation';
@@ -80,13 +81,13 @@ function walk(
 
   let downstream = 0;
   let ok = true;
-  const routes = ctx.graph.routes.get(nodeId)?.[ctx.cls] ?? [];
+  const routes = liveRoutes(ctx.graph, ctx.runtimes, node, ctx.cls);
   if (isCaching(node) && ctx.cls === 'read' && ctx.rng.next() < flow.hitRatio) {
     span.outcome = 'hit';
   } else if (isAsync(node)) {
     span.outcome = 'enqueued';
   } else if (routes.length > 0) {
-    const route = routes[ctx.rng.weightedIndex(ctx.graph.shares.get(nodeId)?.[ctx.cls] ?? [])];
+    const route = routes[ctx.rng.weightedIndex(routes.map((r) => r.share))];
     if (route) {
       ok = false;
       const target = ctx.runtimes.get(route.target) as NodeRuntime;

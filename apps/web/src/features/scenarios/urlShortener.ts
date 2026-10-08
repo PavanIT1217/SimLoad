@@ -1,9 +1,11 @@
 import { createDesign, createEdge, createNode } from '@syssim/engine';
+import { insertBetween, solved, tune } from './edit';
 import type { Scenario } from './types';
 
 export const urlShortener: Scenario = {
   id: 'url-shortener',
   name: 'URL shortener',
+  difficulty: 'warm-up',
   summary:
     'A read-heavy redirect service (99% reads). Short codes are hot and cacheable; ' +
     'writes create new links.',
@@ -43,4 +45,22 @@ export const urlShortener: Scenario = {
       [createEdge('client', 'lb'), createEdge('lb', 'api'), createEdge('api', 'db')],
       { peakRps: 1_000_000, profile: 'steady', readRatio: 0.99 },
     ),
+  solution() {
+    const d = this.build();
+    tune(d, 'api', { instances: 300 });
+    tune(d, 'db', { replicas: 5 });
+    insertBetween(
+      d,
+      'api',
+      'db',
+      createNode(
+        'cache',
+        'cache',
+        { x: 590, y: 40 },
+        { hitRatio: 0.95, instances: 20 },
+        'Link cache',
+      ),
+    );
+    return solved(d);
+  },
 };

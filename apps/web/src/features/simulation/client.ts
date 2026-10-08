@@ -1,5 +1,6 @@
 import type { Design, Fault, FaultKind, ScenarioGoal, TrafficSettings } from '@syssim/engine';
 import { useSimStore } from '../../state/simStore';
+import type { ScenarioChaos } from '../scenarios/types';
 import { FrameBuffer } from './frameBuffer';
 import type { WorkerRequest, WorkerResponse } from './protocol';
 
@@ -79,6 +80,9 @@ class SimulationClient {
   }
   setGoal(goal: ScenarioGoal | null): void {
     this.send({ type: 'setGoal', goal });
+  }
+  setChaos(events: ScenarioChaos[]): void {
+    this.send({ type: 'setChaos', events });
   }
 }
 

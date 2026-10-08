@@ -1,9 +1,11 @@
 import { createDesign, createEdge, createNode } from '@syssim/engine';
+import { insertBetween, solved } from './edit';
 import type { Scenario } from './types';
 
 export const flashSale: Scenario = {
   id: 'flash-sale',
   name: 'Ticket flash sale',
+  difficulty: 'intermediate',
   summary:
     'Tickets go on sale and traffic spikes 10x in seconds. Most requests try to reserve a seat ' +
     '(writes), all hitting one primary database.',
@@ -56,4 +58,20 @@ export const flashSale: Scenario = {
       [createEdge('client', 'lb'), createEdge('lb', 'booking'), createEdge('booking', 'db')],
       { peakRps: 300_000, profile: 'flashSpike', readRatio: 0.3 },
     ),
+  solution() {
+    const d = this.build();
+    insertBetween(
+      d,
+      'booking',
+      'db',
+      createNode(
+        'queue',
+        'queue',
+        { x: 590, y: 40 },
+        { consumerRps: 30_000, maxQueue: 50_000_000 },
+        'Reservation queue',
+      ),
+    );
+    return solved(d);
+  },
 };

@@ -7,6 +7,7 @@ import type {
   TickResult,
   TrafficSettings,
 } from '@syssim/engine';
+import type { ScenarioChaos } from '../scenarios/types';
 
 /** One point on the live charts, aggregated over the ticks of one worker frame. */
 export interface ChartPoint {
@@ -54,7 +55,8 @@ export type WorkerRequest =
   | { type: 'setSpeed'; speed: number }
   | { type: 'injectFault'; nodeId: string; fault: Fault; durationMs?: number }
   | { type: 'clearFault'; nodeId: string; kind?: FaultKind }
-  | { type: 'setGoal'; goal: ScenarioGoal | null };
+  | { type: 'setGoal'; goal: ScenarioGoal | null }
+  | { type: 'setChaos'; events: ScenarioChaos[] };
 
 /** Messages from the simulation worker to the UI thread. */
 export type WorkerResponse =

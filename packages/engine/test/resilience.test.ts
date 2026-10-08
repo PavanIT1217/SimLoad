@@ -155,3 +155,35 @@ describe('cold starts', () => {
     expect(warm.nodes.svc?.latencyMs ?? 0).toBeLessThan(50);
   });
 });
+
+describe('load balancer health checks', () => {
+  const twoRegions = () =>
+    createDesign(
+      'regions',
+      [
+        createNode('client', 'client', undefined, { timeoutMs: 0 }),
+        createNode('glb', 'loadBalancer', undefined, { capacityRps: 1e6, timeoutMs: 0 }),
+        createNode('east', 'service', undefined, { capacityRps: 1e4, timeoutMs: 0 }),
+        createNode('west', 'service', undefined, { capacityRps: 1e4, timeoutMs: 0 }),
+      ],
+      [createEdge('client', 'glb'), createEdge('glb', 'east'), createEdge('glb', 'west')],
+      { peakRps: 1_000 },
+    );
+
+  it('routes around a dead target', () => {
+    const sim = createSimulation(twoRegions());
+    sim.run(5);
+    sim.injectFault('east', { kind: 'kill' });
+    const r = sim.run(5);
+    expect(r.nodes.west?.inflowRps).toBeCloseTo(1_000, 6);
+    expect(r.errorRate).toBeCloseTo(0, 6);
+  });
+
+  it('does not reroute for plain services', () => {
+    const design = twoRegions();
+    design.nodes[1] = createNode('glb', 'service', undefined, { capacityRps: 1e6, timeoutMs: 0 });
+    const sim = createSimulation(design);
+    sim.injectFault('east', { kind: 'kill' });
+    expect(sim.run(5).errorRate).toBeCloseTo(0.5, 6);
+  });
+});

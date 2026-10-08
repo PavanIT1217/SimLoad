@@ -1,6 +1,8 @@
 // Runs the engine off the main thread so the UI stays responsive at any speed.
 import { createGoalTracker, createSimulation, estimateCost } from '@syssim/engine';
 import type { GoalTracker, Simulation, TickResult } from '@syssim/engine';
+import { applyDueChaos } from '../scenarios/chaos';
+import type { ScenarioChaos } from '../scenarios/types';
 import { toChartPoint } from './aggregate';
 import type { WorkerRequest, WorkerResponse } from './protocol';
 import { FRAME_MS } from './protocol';
@@ -9,6 +11,8 @@ const MAX_TRACES_PER_FRAME = 20;
 
 let sim: Simulation | null = null;
 let goal: GoalTracker | null = null;
+let chaos: ScenarioChaos[] = [];
+const firedChaos = new Set<number>();
 let running = false;
 let speed = 1;
 let carry = 0;
@@ -50,6 +54,7 @@ function advance(count: number): void {
   const ticks: TickResult[] = [];
   const start = performance.now();
   for (let i = 0; i < count; i++) {
+    applyDueChaos(sim, chaos, firedChaos);
     ticks.push(sim.step());
     // At high speeds on slow machines, run slower rather than queue up work.
     if (performance.now() - start > FRAME_BUDGET_MS) break;
@@ -84,6 +89,7 @@ function handle(msg: WorkerRequest): void {
     case 'load':
       sim = createSimulation(msg.design, { seed: msg.seed });
       goal?.reset();
+      firedChaos.clear();
       carry = 0;
       post({ type: 'reset' });
       postStatus();
@@ -113,6 +119,7 @@ function handle(msg: WorkerRequest): void {
     case 'reset':
       sim?.reset();
       goal?.reset();
+      firedChaos.clear();
       carry = 0;
       post({ type: 'reset' });
       return;
@@ -124,6 +131,10 @@ function handle(msg: WorkerRequest): void {
       return;
     case 'clearFault':
       sim?.clearFault(msg.nodeId, msg.kind);
+      return;
+    case 'setChaos':
+      chaos = msg.events;
+      firedChaos.clear();
       return;
     case 'setGoal':
       // Budget goals price each tick against the design currently being simulated.

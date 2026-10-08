@@ -5,6 +5,7 @@ import { isCaching } from './components';
 import type { ClassRates, NodePools } from './nodePools';
 import { applyRateLimit, runPools } from './nodePools';
 import { breakerAdmit, retryPlan } from './resilience';
+import { liveRoutes } from './routing';
 import type { NodeRuntime } from './state';
 import {
   clearBacklog,
@@ -92,9 +93,8 @@ export function forwardPass(
     }
 
     let retryRps = 0;
-    const routes = graph.routes.get(id);
     for (const cls of REQUEST_CLASSES) {
-      for (const route of routes?.[cls] ?? []) {
+      for (const route of liveRoutes(graph, runtimes, node, cls)) {
         const target = runtimes.get(route.target) as NodeRuntime;
         const plan = retryPlan(
           callSuccess(target, cls),

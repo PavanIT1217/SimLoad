@@ -1,9 +1,11 @@
 import { createDesign, createEdge, createNode } from '@syssim/engine';
+import { solved, tune } from './edit';
 import type { Scenario } from './types';
 
 export const newsFeed: Scenario = {
   id: 'news-feed',
   name: 'News feed',
+  difficulty: 'intermediate',
   summary:
     'A social feed under a daily traffic wave. Feeds are assembled from a timeline cache, ' +
     'with a slow ranking API on the critical path.',
@@ -71,4 +73,10 @@ export const newsFeed: Scenario = {
       ],
       { peakRps: 200_000, profile: 'dailyWave', readRatio: 0.95 },
     ),
+  solution() {
+    const d = this.build();
+    tune(d, 'feed', { instances: 80 });
+    tune(d, 'rank', { instances: 30 });
+    return solved(d);
+  },
 };

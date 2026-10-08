@@ -9,6 +9,8 @@ export function useScenarioGoal(): void {
   const mode = useUiStore((s) => s.mode);
   useEffect(() => {
     const scenario = findScenario(scenarioId);
-    simulation.setGoal(mode === 'prep' && scenario ? scenario.goal : null);
+    const active = mode === 'prep' && scenario;
+    simulation.setGoal(active ? scenario.goal : null);
+    simulation.setChaos(active ? (scenario.chaos ?? []) : []);
   }, [scenarioId, mode]);
 }

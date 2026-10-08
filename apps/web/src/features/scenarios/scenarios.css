@@ -86,3 +86,37 @@
   margin: 0;
   padding-left: 18px;
 }
+.difficulty {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+}
+.diff-warm-up {
+  color: var(--ok);
+}
+.diff-intermediate {
+  color: var(--warn);
+}
+.diff-advanced {
+  color: var(--bad);
+}
+.goal-chaos {
+  color: var(--warn);
+  font-size: 11px;
+}
+.goal-hints {
+  margin: 4px 0;
+  padding-left: 20px;
+}
+.goal-hints li + li {
+  margin-top: 2px;
+}
+.goal-hint-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}

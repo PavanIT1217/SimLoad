@@ -4,6 +4,7 @@ import type { RequestClass } from '../model/types';
 import { callerWaitMs, isAsync, isCaching } from './components';
 import type { FlowResult, NodeFlow } from './flow';
 import { breakerAdmit, retryPlan } from './resilience';
+import { liveRoutes } from './routing';
 import type { NodeRuntime } from './state';
 
 /** Latency of a fast failure (connection refused, queue full). */
@@ -46,7 +47,7 @@ function classOutcome(
   const coldMs = flow.coldFraction * cfg.coldStartMs;
   const localLatencyMs = lognormalMean(base, cfg.latencySigma) + waitMs + flow.injectedMs + coldMs;
 
-  const routes = graph.routes.get(node.id)?.[cls] ?? [];
+  const routes = liveRoutes(graph, runtimes, node, cls);
   let continuation = routes.length > 0 ? 1 : 0;
   if (isAsync(node)) continuation = 0;
   else if (isCaching(node) && cls === 'read') continuation *= 1 - flow.hitRatio;

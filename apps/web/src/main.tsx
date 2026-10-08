@@ -7,12 +7,14 @@ import '@fontsource-variable/space-grotesk';
 import './styles/theme.css';
 import './ui/ui.css';
 
-bootstrapDesign();
-
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element');
-createRoot(root).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+
+// Resolve the starting design (share link, autosave or a scenario) before the first render.
+void bootstrapDesign().finally(() => {
+  createRoot(root).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+});

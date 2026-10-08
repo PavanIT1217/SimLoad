@@ -9,10 +9,10 @@ import { designFromHash } from './shareLink';
  * Picks the initial design: a shared link wins, then the autosave, then the
  * first built-in scenario. The hash is cleared so a reload keeps local edits.
  */
-export function bootstrapDesign(): void {
+export async function bootstrapDesign(): Promise<void> {
   const ui = useUiStore.getState();
   try {
-    const shared = designFromHash(window.location.hash);
+    const shared = await designFromHash(window.location.hash);
     if (shared) {
       useDesignStore.getState().setDesign(shared);
       ui.setScenarioId(null);

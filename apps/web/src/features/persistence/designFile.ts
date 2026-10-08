@@ -1,5 +1,5 @@
 import type { Design } from '@syssim/engine';
-import { parseDesignJson } from './schema';
+import { importDesignFile } from './fileImport';
 
 export function designFileName(design: Design): string {
   const slug = design.name
@@ -21,5 +21,5 @@ export function exportDesign(design: Design): void {
 }
 
 export async function importDesign(file: File): Promise<Design> {
-  return parseDesignJson(await file.text());
+  return (await importDesignFile(await file.text(), file.name)).design;
 }

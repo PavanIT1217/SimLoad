@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useUiStore } from '../../state/uiStore';
 import { Button } from '../../ui/Button';
+import { ReportButtons } from '../report/ReportButtons';
 import { loadScenario } from '../scenarios/loadScenario';
 import { exportDesign, importDesign } from './designFile';
 import { shareUrl } from './shareLink';
@@ -26,10 +27,10 @@ export function PersistenceMenu() {
   };
 
   const onShare = async () => {
-    const url = shareUrl(useDesignStore.getState().design, window.location);
+    const url = await shareUrl(useDesignStore.getState().design, window.location);
     try {
       await navigator.clipboard.writeText(url);
-      showToast('Share link copied to clipboard');
+      showToast(`Share link copied (${url.length.toLocaleString()} characters)`);
     } catch {
       window.prompt('Copy this share link', url);
     }
@@ -51,7 +52,7 @@ export function PersistenceMenu() {
       <input
         ref={fileInput}
         type="file"
-        accept=".json,application/json"
+        accept=".json,.mmd,.mermaid,.md,.txt,.drawio,.xml"
         hidden
         onChange={onImport}
       />
@@ -65,6 +66,7 @@ export function PersistenceMenu() {
       <Button size="sm" variant="ghost" onClick={onShare}>
         Share link
       </Button>
+      <ReportButtons />
     </div>
   );
 }

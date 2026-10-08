@@ -1,4 +1,12 @@
-const PREFERRED_COLUMN = /latency|duration|elapsed|response|_ms$|^ms$|time/i;
+/** Column names that hold latency, most specific first ("timeStamp" must not win over "elapsed"). */
+const PREFERRED_COLUMNS = [
+  /latency/i,
+  /elapsed/i,
+  /duration/i,
+  /response.?time/i,
+  /_ms$|^ms$/i,
+  /time/i,
+];
 
 function splitRow(line: string, delimiter: string): string[] {
   return line.split(delimiter).map((cell) => cell.trim().replace(/^"|"$/g, ''));
@@ -34,7 +42,11 @@ export function parseLatencyCsv(text: string): number[] {
   const hasHeader = header.some((cell) => !isNumeric(cell));
   const rows = (hasHeader ? lines.slice(1) : lines).map((l) => splitRow(l, delimiter));
 
-  let column = hasHeader ? header.findIndex((h) => PREFERRED_COLUMN.test(h)) : -1;
+  let column = -1;
+  for (const pattern of hasHeader ? PREFERRED_COLUMNS : []) {
+    column = header.findIndex((h) => pattern.test(h));
+    if (column >= 0) break;
+  }
   if (column < 0) {
     const width = Math.max(header.length, ...rows.map((r) => r.length));
     for (let c = 0; c < width && column < 0; c++) {

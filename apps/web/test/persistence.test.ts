@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { parseLatencyCsv } from '../src/features/inspector/csv';
 import { designFileName } from '../src/features/persistence/designFile';
 import { DesignParseError, parseDesign, parseDesignJson } from '../src/features/persistence/schema';
+import { SCENARIOS } from '../src/features/scenarios';
 import { decodeDesign, designFromHash, encodeDesign } from '../src/features/persistence/shareLink';
 
 const sample = createDesign(
@@ -13,16 +14,27 @@ const sample = createDesign(
 );
 
 describe('share links', () => {
-  it('round-trip a design (including non-ASCII names) through the URL hash', () => {
-    const encoded = encodeDesign(sample);
+  it('round-trip a design (including non-ASCII names) through the URL hash', async () => {
+    const encoded = await encodeDesign(sample);
     expect(encoded).toMatch(/^[A-Za-z0-9_-]+$/);
-    expect(decodeDesign(encoded)).toEqual(sample);
-    expect(designFromHash(`#design=${encoded}`)).toEqual(sample);
+    expect(await decodeDesign(encoded)).toEqual(sample);
+    expect(await designFromHash(`#z=${encoded}`)).toEqual(sample);
   });
 
-  it('returns null when the hash has no design', () => {
-    expect(designFromHash('')).toBeNull();
-    expect(designFromHash('#other=1')).toBeNull();
+  it('compresses links well below the raw JSON size', async () => {
+    const big = { ...sample, nodes: SCENARIOS.flatMap((s) => s.build().nodes).slice(0, 12) };
+    const encoded = await encodeDesign(big);
+    expect(encoded.length).toBeLessThan(JSON.stringify(big).length / 3);
+  });
+
+  it('still opens legacy uncompressed links', async () => {
+    const legacy = Buffer.from(JSON.stringify(sample)).toString('base64url');
+    expect(await designFromHash(`#design=${legacy}`)).toEqual(sample);
+  });
+
+  it('returns null when the hash has no design', async () => {
+    expect(await designFromHash('')).toBeNull();
+    expect(await designFromHash('#other=1')).toBeNull();
   });
 });
 

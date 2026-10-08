@@ -1,4 +1,4 @@
-import { fitFromPercentiles, fitLognormal } from '@syssim/engine';
+import { fitFromPercentiles } from '@syssim/engine';
 import type { DesignNode, LatencyFit } from '@syssim/engine';
 import type { ChangeEvent } from 'react';
 import { useState } from 'react';
@@ -7,7 +7,7 @@ import { Button } from '../../ui/Button';
 import { Field, NumberInput } from '../../ui/Field';
 import { formatMs } from '../../ui/format';
 import { Section } from '../../ui/Section';
-import { parseLatencyCsv } from './csv';
+import { FORMAT_LABELS, importLoadTest } from './loadTestImport';
 
 export interface CalibrationPanelProps {
   node: DesignNode;
@@ -44,10 +44,14 @@ export function CalibrationPanel({ node }: CalibrationPanelProps) {
     event.target.value = '';
     if (!file) return;
     try {
-      const samples = parseLatencyCsv(await file.text());
-      const f = fitLognormal(samples);
-      setFit(f);
-      setMessage(`Fitted ${f.count.toLocaleString()} samples from ${file.name}`);
+      const imported = importLoadTest(await file.text());
+      setFit(imported.fit);
+      setMessage(
+        `${FORMAT_LABELS[imported.format]}: ` +
+          (imported.samples.length > 0
+            ? `fitted ${imported.samples.length.toLocaleString()} samples from ${file.name}`
+            : `fitted from reported percentiles in ${file.name}`),
+      );
     } catch (error) {
       setFit(null);
       setMessage(error instanceof Error ? error.message : String(error));
@@ -57,7 +61,8 @@ export function CalibrationPanel({ node }: CalibrationPanelProps) {
   return (
     <Section title="Calibrate from measurements">
       <p className="muted small">
-        Enter what you measured in production, or import a CSV of latency samples (ms).
+        Enter what you measured in production, or import load-test results: CSV, JMeter JTL, k6
+        (summary or JSON output) or Gatling simulation.log.
       </p>
       <div className="field-grid">
         <Field label="Measured p50 (ms)">
@@ -84,8 +89,8 @@ export function CalibrationPanel({ node }: CalibrationPanelProps) {
         </div>
       )}
       <label className="btn btn-default btn-md file-button">
-        Import latency CSV
-        <input type="file" accept=".csv,.txt,text/csv" onChange={onCsv} hidden />
+        Import load-test results
+        <input type="file" accept=".csv,.jtl,.json,.log,.txt" onChange={onCsv} hidden />
       </label>
       {fit && (
         <div className="fit-result mono">

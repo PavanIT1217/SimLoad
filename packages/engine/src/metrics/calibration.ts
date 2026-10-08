@@ -42,3 +42,24 @@ export function fitLognormal(samples: readonly number[]): LatencyFit {
     p99: percentile(sorted, 99),
   };
 }
+
+/** z-scores of common percentiles of the standard normal distribution. */
+export const PERCENTILE_Z: Readonly<Record<number, number>> = {
+  75: 0.6745,
+  90: 1.2816,
+  95: 1.6449,
+  99: 2.3263,
+  99.9: 3.0902,
+};
+
+/**
+ * Lognormal fit from the median and any one upper percentile (90, 95, 99, …),
+ * e.g. when a load-test tool only reports p95.
+ */
+export function fitFromPercentile(p50Ms: number, percentile: number, valueMs: number): LatencyFit {
+  const z = PERCENTILE_Z[percentile];
+  if (z === undefined) throw new RangeError(`Unsupported percentile p${percentile}`);
+  if (!(p50Ms > 0) || !(valueMs >= p50Ms)) throw new RangeError('Need 0 < p50 <= upper percentile');
+  const sigma = Math.log(valueMs / p50Ms) / z;
+  return { medianMs: p50Ms, sigma, count: 0, p50: p50Ms, p99: p50Ms * Math.exp(sigma * Z_P99) };
+}

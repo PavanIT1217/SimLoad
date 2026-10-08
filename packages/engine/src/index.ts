@@ -55,7 +55,12 @@ export { percentile, summarize } from './metrics/percentiles';
 export type { CostFn, GoalCheck, GoalStatus, GoalTracker, ScenarioGoal } from './metrics/goals';
 export { createGoalTracker, describeGoal } from './metrics/goals';
 export type { LatencyFit } from './metrics/calibration';
-export { fitFromPercentiles, fitLognormal } from './metrics/calibration';
+export {
+  PERCENTILE_Z,
+  fitFromPercentile,
+  fitFromPercentiles,
+  fitLognormal,
+} from './metrics/calibration';
 
 export type { Rng } from './util/rng';
 export { createRng } from './util/rng';

@@ -12,6 +12,8 @@ export interface CompiledGraph {
   order: string[];
   nodes: Map<string, DesignNode>;
   routes: Map<string, Route[]>;
+  /** Routing shares per node, aligned with `routes` (precomputed for the sampler). */
+  shares: Map<string, number[]>;
   clients: string[];
 }
 
@@ -78,5 +80,6 @@ export function compileGraph(design: Design): CompiledGraph {
     );
   }
   const clients = design.nodes.filter((n) => n.kind === 'client').map((n) => n.id);
-  return { order, nodes, routes, clients };
+  const shares = new Map([...routes].map(([id, list]) => [id, list.map((r) => r.share)]));
+  return { order, nodes, routes, shares, clients };
 }

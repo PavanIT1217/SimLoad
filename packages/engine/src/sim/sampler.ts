@@ -80,7 +80,7 @@ function walk(
   } else if (isAsync(node)) {
     span.outcome = 'enqueued';
   } else if (routes.length > 0) {
-    const route = routes[ctx.rng.weightedIndex(routes.map((r) => r.share))];
+    const route = routes[ctx.rng.weightedIndex(ctx.graph.shares.get(nodeId) ?? [])];
     if (route) {
       ok = false;
       for (let a = 0; a <= cfg.retries && !ok; a++) {

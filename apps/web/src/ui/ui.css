@@ -343,3 +343,17 @@ input[type='range'] {
   font-size: 9px;
   letter-spacing: 0;
 }
+
+/* ---------- Description editor ---------- */
+.description-input {
+  resize: vertical;
+  min-height: 56px;
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.description-count {
+  align-self: flex-end;
+  font-size: 9.5px;
+  color: var(--text-faint);
+}

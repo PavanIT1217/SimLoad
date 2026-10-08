@@ -71,6 +71,9 @@ latency and capacity).
 
 **Editing and sharing**
 
+- Descriptions on every component and connection (purpose, behaviour, what
+  flows over a link), shown in a hover card on the canvas and included in
+  reports. All built-in scenarios come described.
 - Undo/redo, copy/paste/duplicate and one-click layered auto-layout.
 - Import from SimLoad JSON, Mermaid flowcharts or draw.io files. Component
   kinds are inferred from labels and shapes.
@@ -80,6 +83,11 @@ latency and capacity).
 - **Flexible workspace:**
   - Resizable, collapsible panels; focus mode with `F`.
   - Zoom, fit and minimap controls sit in a toolbar above the canvas.
+- Opens straight into the URL shortener scenario with a 3‑2‑1 countdown, then
+  starts the simulation. "Explore first" stays paused, and "Restore my last
+  design" brings back your own previous work. Shared links open their design
+  instead.
+- Dark ("mission control") theme by default, with a light theme one click away.
 - 100% client-side: no backend, no accounts.
 
 ### Keyboard shortcuts

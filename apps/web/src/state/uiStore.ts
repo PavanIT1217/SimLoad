@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { StartupInfo } from '../features/persistence/bootstrap';
 import { readStorage, writeStorage } from '../features/persistence/storage';
 
 export type Theme = 'dark' | 'light';
@@ -8,16 +9,10 @@ export type DockTab = 'live' | 'compare';
 
 const THEME_KEY = 'simload:theme';
 
+/** Dark ("mission control") is the default; a theme the user picked is remembered. */
 function initialTheme(): Theme {
   const stored = readStorage(THEME_KEY);
-  if (stored === 'dark' || stored === 'light') return stored;
-  if (
-    typeof window !== 'undefined' &&
-    window.matchMedia?.('(prefers-color-scheme: light)').matches
-  ) {
-    return 'light';
-  }
-  return 'dark';
+  return stored === 'light' ? 'light' : 'dark';
 }
 
 export interface UiState {
@@ -28,6 +23,9 @@ export interface UiState {
   toast: string | null;
   rightTab: RightTab;
   dockTab: DockTab;
+  /** Start-up announcement (countdown overlay); null once dismissed. */
+  startup: StartupInfo | null;
+  setStartup(startup: StartupInfo | null): void;
   setRightTab(tab: RightTab): void;
   setDockTab(tab: DockTab): void;
   toggleTheme(): void;
@@ -44,6 +42,8 @@ export const useUiStore = create<UiState>()((set, get) => ({
   toast: null,
   rightTab: 'inspect',
   dockTab: 'live',
+  startup: null,
+  setStartup: (startup) => set({ startup }),
   setRightTab: (rightTab) => set({ rightTab }),
   setDockTab: (dockTab) => set({ dockTab }),
   toggleTheme: () => {

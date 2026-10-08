@@ -5,6 +5,7 @@ import { useSimStore } from '../../state/simStore';
 import { Button } from '../../ui/Button';
 import { Field, NumberInput } from '../../ui/Field';
 import { formatRps } from '../../ui/format';
+import { DescriptionField } from '../../ui/DescriptionField';
 import { Section, Stat } from '../../ui/Section';
 
 export interface EdgeInspectorProps {
@@ -36,6 +37,13 @@ export function EdgeInspector({ edge }: EdgeInspectorProps) {
           Delete
         </Button>
       </header>
+      <Section title="About">
+        <DescriptionField
+          value={edge.description}
+          onChange={(description) => updateEdge(edge.id, { description })}
+          placeholder="What travels over this link? e.g. Cache misses read from the primary over TLS."
+        />
+      </Section>
       <Section title="Routing">
         <Field label="Carries" hint="Route only reads or only writes along this edge (CQRS-style)">
           <select

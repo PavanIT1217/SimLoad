@@ -7,6 +7,7 @@ import { Button } from '../../ui/Button';
 import { formatCompact, formatMs, formatPct, formatRps } from '../../ui/format';
 import { HEALTH_LABEL, healthOf } from '../../ui/health';
 import { KindIcon } from '../../ui/KindIcon';
+import { DescriptionField } from '../../ui/DescriptionField';
 import { Section, Stat } from '../../ui/Section';
 import { CalibrationPanel } from './CalibrationPanel';
 import { ChaosActions } from './ChaosActions';
@@ -99,6 +100,14 @@ export function NodeInspector({ node }: NodeInspectorProps) {
           Delete
         </Button>
       </header>
+
+      <Section title="About">
+        <DescriptionField
+          value={node.description}
+          onChange={(description) => updateNode(node.id, { description })}
+          placeholder="What does this component do? e.g. Stateless API that resolves short codes and issues redirects."
+        />
+      </Section>
 
       <Section title="Live">
         <LiveStats nodeId={node.id} />

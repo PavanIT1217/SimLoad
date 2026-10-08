@@ -1,5 +1,5 @@
 import type { ReportData } from './reportData';
-import { COMPONENT_HEADERS, componentRows, summaryLines } from './reportData';
+import { COMPONENT_HEADERS, componentRows, descriptionLines, summaryLines } from './reportData';
 
 const cell = (s: string) => s.replace(/\|/g, '\\|');
 
@@ -25,6 +25,9 @@ export function buildMarkdownReport(data: ReportData): string {
     `| ${COMPONENT_HEADERS.map(() => '---').join(' | ')} |`,
     ...componentRows(data).map((r) => `| ${r.map(cell).join(' | ')} |`),
     '',
+    ...(descriptionLines(data).length > 0
+      ? ['## What each part does', '', ...descriptionLines(data).map((l) => `- ${l}`), '']
+      : []),
     '## Connections',
     '',
     ...design.edges.map((e) => {

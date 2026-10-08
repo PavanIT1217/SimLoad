@@ -38,6 +38,13 @@ describe.each(SCENARIOS)('scenario: $name', (scenario) => {
     expect(status.state).toBe('pass');
   });
 
+  it('describes every component (shown on hover)', () => {
+    for (const design of [scenario.build(), scenario.solution()]) {
+      const missing = design.nodes.filter((n) => !n.description).map((n) => n.id);
+      expect(missing).toEqual([]);
+    }
+  });
+
   it('has staged hints', () => {
     expect(scenario.hints.length).toBeGreaterThanOrEqual(3);
   });

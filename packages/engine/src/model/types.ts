@@ -92,6 +92,8 @@ export interface DesignNode {
   config: NodeConfig;
   /** Availability zone or region label, used for zone-outage chaos (optional). */
   zone?: string;
+  /** Free-text purpose and behaviour of the component (shown on hover). */
+  description?: string;
 }
 
 export type RequestClass = 'read' | 'write';
@@ -107,6 +109,8 @@ export interface DesignEdge {
   weight: number;
   /** Request class this edge carries (default 'all'), e.g. reads to a cache, writes to a queue. */
   traffic?: EdgeTraffic;
+  /** Free-text description of what flows over this connection (shown on hover). */
+  description?: string;
 }
 
 export type TrafficProfile = 'steady' | 'dailyWave' | 'flashSpike' | 'ramp';

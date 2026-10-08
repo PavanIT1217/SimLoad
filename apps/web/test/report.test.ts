@@ -19,6 +19,7 @@ describe('reports', () => {
     expect(md).toMatch(/\| Redirect API \| Service \|/);
     expect(md).toMatch(/### CRITICAL: .*overloaded/);
     expect(md).toMatch(/Scenario goal: .* — PENDING/);
+    expect(md).toMatch(/## What each part does[\s\S]*Redirect API: Stateless redirect API/);
   });
 
   it('renders a print-ready HTML report with an SVG diagram', () => {

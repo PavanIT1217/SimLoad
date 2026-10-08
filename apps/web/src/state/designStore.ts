@@ -24,7 +24,7 @@ export interface DesignState extends HistoryState {
   setDesign(design: Design): void;
   rename(name: string): void;
   addNode(kind: ComponentKind, position: Position): string;
-  updateNode(id: string, patch: Partial<Pick<DesignNode, 'label' | 'zone'>>): void;
+  updateNode(id: string, patch: Partial<Pick<DesignNode, 'label' | 'zone' | 'description'>>): void;
   updateNodeConfig(id: string, patch: Partial<NodeConfig>): void;
   /** Applies config patches to several nodes as one undo step (e.g. a capacity plan). */
   applyConfigs(patches: Record<string, Partial<NodeConfig>>): void;
@@ -33,7 +33,10 @@ export interface DesignState extends HistoryState {
   moveNodes(positions: Record<string, Position>): void;
   removeNode(id: string): void;
   connect(source: string, target: string): void;
-  updateEdge(id: string, patch: Partial<Pick<DesignEdge, 'weight' | 'traffic'>>): void;
+  updateEdge(
+    id: string,
+    patch: Partial<Pick<DesignEdge, 'weight' | 'traffic' | 'description'>>,
+  ): void;
   removeEdge(id: string): void;
   setTraffic(patch: Partial<TrafficSettings>): void;
   select(selection: Selection): void;
@@ -159,7 +162,10 @@ export const useDesignStore = create<DesignState>()((set, get) => {
       }),
 
     updateEdge: (id, patch) =>
-      edit((d) => ({ ...d, edges: d.edges.map((e) => (e.id === id ? { ...e, ...patch } : e)) })),
+      edit(
+        (d) => ({ ...d, edges: d.edges.map((e) => (e.id === id ? { ...e, ...patch } : e)) }),
+        `edge:${id}:${Object.keys(patch).join()}`,
+      ),
 
     removeEdge: (id) =>
       edit((d) => ({ ...d, edges: d.edges.filter((e) => e.id !== id) }), null, {

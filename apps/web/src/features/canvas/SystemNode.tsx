@@ -8,6 +8,7 @@ import { formatCompact, formatMs } from '../../ui/format';
 import { HEALTH_LABEL, healthOf } from '../../ui/health';
 import { KindIcon } from '../../ui/KindIcon';
 import { Gauge } from './Gauge';
+import { NodeTooltip } from './NodeTooltip';
 import { useNodeView } from './useNodeView';
 
 export type SystemNodeData = Record<string, never>;
@@ -45,7 +46,14 @@ function SystemNodeView({ id, selected }: NodeProps<SystemFlowNode>) {
           <KindIcon kind={node.kind} size={15} />
         </span>
         <span className="sys-node-titles">
-          <span className="sys-node-label">{node.label}</span>
+          <span className="sys-node-label">
+            {node.label}
+            {node.description && (
+              <span className="sys-node-info" aria-hidden="true">
+                ⓘ
+              </span>
+            )}
+          </span>
           <span className="sys-node-kind mono">
             {KIND_CODE[node.kind]}
             {!isClient && ` ×${instances}`}
@@ -83,6 +91,7 @@ function SystemNodeView({ id, selected }: NodeProps<SystemFlowNode>) {
         <div className="sys-node-badge is-warn">{live?.faults.join(' · ')}</div>
       )}
       <Handle type="source" position={Position.Right} />
+      <NodeTooltip node={node} />
     </div>
   );
 }

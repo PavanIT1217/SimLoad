@@ -1,6 +1,6 @@
 import { designSvg } from './designSvg';
 import type { ReportData } from './reportData';
-import { COMPONENT_HEADERS, componentRows, summaryLines } from './reportData';
+import { COMPONENT_HEADERS, componentRows, descriptionLines, summaryLines } from './reportData';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -50,6 +50,13 @@ export function buildHtmlReport(data: ReportData, charts = ''): string {
     .join('')}</ul>
 <h2>Architecture</h2><div class="diagram">${designSvg(data.design, data.tick)}</div>
 <h2>Components</h2><table><thead><tr>${COMPONENT_HEADERS.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
+${
+  descriptionLines(data).length
+    ? `<h2>What each part does</h2><ul>${descriptionLines(data)
+        .map((l) => `<li>${esc(l)}</li>`)
+        .join('')}</ul>`
+    : ''
+}
 ${charts ? `<h2>Live metrics</h2><div class="charts">${charts}</div>` : ''}
 <h2>Findings</h2>${findings || '<p>Run the simulation to generate findings.</p>'}
 </body></html>`;

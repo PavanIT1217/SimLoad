@@ -8,8 +8,8 @@ import { simulation } from './client';
 /** Everything that affects simulation results (node positions and labels do not). */
 function simulationSignature(design: Design): string {
   return JSON.stringify({
-    nodes: design.nodes.map((n) => [n.id, n.kind, n.config]),
-    edges: design.edges.map((e) => [e.id, e.source, e.target, e.weight]),
+    nodes: design.nodes.map((n) => [n.id, n.kind, n.config, n.zone ?? '']),
+    edges: design.edges.map((e) => [e.id, e.source, e.target, e.weight, e.traffic ?? 'all']),
   });
 }
 

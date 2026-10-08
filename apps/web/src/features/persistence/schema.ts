@@ -31,6 +31,15 @@ function str(value: unknown, fallback: string): string {
   return typeof value === 'string' ? value : fallback;
 }
 
+/** Max characters kept for a node or edge description. */
+export const MAX_DESCRIPTION = 1_000;
+
+/** `{ description }` when the input has a non-empty description string, else `{}`. */
+function description(value: unknown): { description?: string } {
+  if (typeof value !== 'string' || value.trim() === '') return {};
+  return { description: value.slice(0, MAX_DESCRIPTION) };
+}
+
 function parseConfig(kind: ComponentKind, raw: unknown): NodeConfig {
   const defaults = defaultConfig(kind);
   if (!isObject(raw)) return defaults;
@@ -73,6 +82,7 @@ function parseNode(raw: unknown, index: number): DesignNode {
     position: { x: num(position.x, 0), y: num(position.y, 0) },
     config: parseConfig(kind, raw.config),
     ...(typeof raw.zone === 'string' && raw.zone !== '' ? { zone: raw.zone } : {}),
+    ...description(raw.description),
   };
 }
 
@@ -86,6 +96,7 @@ function parseEdge(raw: unknown, index: number): DesignEdge {
     target: raw.target,
     weight: num(raw.weight, 1),
     traffic: raw.traffic === 'read' || raw.traffic === 'write' ? raw.traffic : 'all',
+    ...description(raw.description),
   };
 }
 

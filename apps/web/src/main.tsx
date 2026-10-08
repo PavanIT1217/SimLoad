@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 import { bootstrapDesign } from './features/persistence/bootstrap';
+import { useUiStore } from './state/uiStore';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/space-grotesk';
 import './styles/theme.css';
@@ -11,10 +12,12 @@ const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element');
 
 // Resolve the starting design (share link, autosave or a scenario) before the first render.
-void bootstrapDesign().finally(() => {
-  createRoot(root).render(
-    <StrictMode>
-      <App />
-    </StrictMode>,
-  );
-});
+void bootstrapDesign()
+  .then((startup) => useUiStore.getState().setStartup(startup))
+  .finally(() => {
+    createRoot(root).render(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+  });

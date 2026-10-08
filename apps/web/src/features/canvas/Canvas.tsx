@@ -11,6 +11,7 @@ import '@xyflow/react/dist/style.css';
 import type { DragEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useDesignStore } from '../../state/designStore';
+import { useHoverStore } from '../../state/hoverStore';
 import { useLayoutStore } from '../../state/layoutStore';
 import { useUiStore } from '../../state/uiStore';
 import { CanvasToolbar } from './CanvasToolbar';
@@ -57,7 +58,7 @@ function CanvasInner() {
         source: e.source,
         target: e.target,
         type: 'flow',
-        data: { weight: e.weight, traffic: e.traffic ?? 'all' },
+        data: { weight: e.weight, traffic: e.traffic ?? 'all', description: e.description },
         selected: selection?.type === 'edge' && selection.id === e.id,
       })),
     [design.edges, selection],
@@ -121,6 +122,8 @@ function CanvasInner() {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onPaneClick={() => useDesignStore.getState().select(null)}
+          onEdgeMouseEnter={(_, edge) => useHoverStore.getState().setEdge(edge.id)}
+          onEdgeMouseLeave={() => useHoverStore.getState().setEdge(null)}
           colorMode={theme}
           deleteKeyCode={['Backspace', 'Delete']}
           fitView

@@ -86,3 +86,18 @@ describe('parseLatencyCsv', () => {
     expect(parseLatencyCsv('name;value\na;3\nb;4')).toEqual([3, 4]);
   });
 });
+
+describe('descriptions', () => {
+  it('round-trips node and edge descriptions and drops empty ones', () => {
+    const design = parseDesign({
+      nodes: [
+        { id: 'c', kind: 'client', description: 'Mobile users' },
+        { id: 's', kind: 'service', description: '   ' },
+      ],
+      edges: [{ source: 'c', target: 's', description: 'HTTPS requests' }],
+    });
+    expect(design.nodes[0]?.description).toBe('Mobile users');
+    expect(design.nodes[1]).not.toHaveProperty('description');
+    expect(design.edges[0]?.description).toBe('HTTPS requests');
+  });
+});

@@ -53,3 +53,10 @@ export function solved(design: Design): Design {
   design.name = `${design.name} (reference solution)`;
   return design;
 }
+
+/** Attaches descriptions to nodes and edges by id (edge ids look like "a->b"). */
+export function describe(design: Design, notes: Readonly<Record<string, string>>): Design {
+  for (const n of design.nodes) if (notes[n.id] && !n.description) n.description = notes[n.id];
+  for (const e of design.edges) if (notes[e.id] && !e.description) e.description = notes[e.id];
+  return design;
+}

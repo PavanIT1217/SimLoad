@@ -83,3 +83,14 @@ export function summaryLines(data: ReportData): string[] {
   }
   return lines;
 }
+
+/** "Label: description" lines for every described component and connection. */
+export function descriptionLines(data: ReportData): string[] {
+  const label = (id: string) => data.design.nodes.find((n) => n.id === id)?.label ?? id;
+  return [
+    ...data.design.nodes.filter((n) => n.description).map((n) => `${n.label}: ${n.description}`),
+    ...data.design.edges
+      .filter((e) => e.description)
+      .map((e) => `${label(e.source)} → ${label(e.target)}: ${e.description}`),
+  ];
+}

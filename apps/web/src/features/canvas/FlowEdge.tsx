@@ -2,11 +2,13 @@ import { BaseEdge, EdgeLabelRenderer, getBezierPath } from '@xyflow/react';
 import type { EdgeTraffic } from '@simload/engine';
 import type { Edge, EdgeProps } from '@xyflow/react';
 import { memo } from 'react';
+import { useHoverStore } from '../../state/hoverStore';
 import { useSimStore } from '../../state/simStore';
+import { EdgeTooltip } from './EdgeTooltip';
 import { formatCompact } from '../../ui/format';
 import { particleCount, particleDuration, strokeWidthFor } from './edgeStyle';
 
-export type FlowEdgeData = { weight: number; traffic: EdgeTraffic };
+export type FlowEdgeData = { weight: number; traffic: EdgeTraffic; description?: string };
 export type SystemFlowEdge = Edge<FlowEdgeData, 'flow'>;
 
 function FlowEdgeView({
@@ -22,6 +24,8 @@ function FlowEdgeView({
 }: EdgeProps<SystemFlowEdge>) {
   const rps = useSimStore((s) => s.latest?.edges[id] ?? 0);
   const running = useSimStore((s) => s.running);
+  const hovered = useHoverStore((s) => s.edgeId === id);
+  const setHover = useHoverStore((s) => s.setEdge);
   const [path, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -57,6 +61,8 @@ function FlowEdgeView({
         <div
           className={`flow-edge-label mono ${selected ? 'is-selected' : ''}`}
           style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
+          onMouseEnter={() => setHover(id)}
+          onMouseLeave={() => setHover(null)}
         >
           {active ? formatCompact(rps) : '0'}
           {data && data.traffic !== 'all' && (
@@ -65,6 +71,12 @@ function FlowEdgeView({
             </span>
           )}
           {data && data.weight !== 1 && <span className="flow-edge-weight">w{data.weight}</span>}
+          {data?.description && (
+            <span className="flow-edge-info" aria-hidden="true">
+              ⓘ
+            </span>
+          )}
+          {hovered && <EdgeTooltip data={data} rps={rps} />}
         </div>
       </EdgeLabelRenderer>
     </>

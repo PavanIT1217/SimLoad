@@ -26,7 +26,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Build
-        # vite.config.ts derives the base path (/<repo>/) from GITHUB_REPOSITORY.
+        # Served from the custom domain https://simload.webappslab.com/ (site root).
+        # Remove VITE_BASE to serve from https://<owner>.github.io/<repo>/ instead.
+        env:
+          VITE_BASE: /
         run: pnpm build
       - uses: actions/configure-pages@v5
         with:

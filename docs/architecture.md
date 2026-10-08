@@ -167,5 +167,6 @@ gives byte-identical `TickResult`s; a test checks this.
 ## Deployment
 
 `deploy.yml` builds on pushes to `main` and publishes `apps/web/dist` with
-`actions/deploy-pages`. `vite.config.ts` sets `base` to `/<repo>/` from
-`GITHUB_REPOSITORY`; set `VITE_BASE` to override it.
+`actions/deploy-pages` to https://simload.webappslab.com/. It sets
+`VITE_BASE=/` for the custom domain. Without it, `vite.config.ts` derives
+`/<repo>/` from `GITHUB_REPOSITORY`.

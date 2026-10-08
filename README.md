@@ -9,7 +9,7 @@ Use it for **system-design interview prep** (built-in scenarios with pass/fail
 goals) and for **validating real architectures** (calibrate nodes from measured
 latency and capacity).
 
-**Live demo:** https://pavanit1217.github.io/SysSim/
+**Live demo:** https://simload.webappslab.com/
 
 ![System Design Simulator: the URL shortener scenario with the Insights panel explaining the bottleneck](docs/screenshot.png)
 
@@ -115,10 +115,15 @@ pnpm dev          # http://localhost:5173
 ## Deploying
 
 Every push to `main` runs `.github/workflows/deploy.yml`, which builds the app
-and publishes it to GitHub Pages. The Vite `base` path is derived from the
-repository name (`/<repo>/`); set `VITE_BASE` to override it, for example for a
-custom domain. In the repository settings, Pages must use **GitHub Actions** as
-its source; the workflow tries to enable this automatically.
+and publishes it to GitHub Pages at the custom domain
+[simload.webappslab.com](https://simload.webappslab.com/). The domain is set in
+the repository's Pages settings and points at GitHub Pages via a DNS `CNAME`
+record.
+
+The workflow builds with `VITE_BASE=/` because a custom domain serves the site
+from the root. Without `VITE_BASE`, `vite.config.ts` derives the base path from
+the repository name (`/<repo>/`) for `https://<owner>.github.io/<repo>/`. Pages
+must use **GitHub Actions** as its source.
 
 `.github/workflows/ci.yml` runs format check, lint, typecheck, tests and build on
 every push and pull request.

@@ -3,11 +3,11 @@ import { useSimStore } from '../../state/simStore';
 import type { ChartPoint } from './protocol';
 
 /** Charts and traces redraw at most this often; live readouts follow every animation frame. */
-const CHART_INTERVAL_MS = 250;
+const CHART_INTERVAL_MS = 500;
 
 /**
  * Coalesces worker frames so React renders at most once per animation frame,
- * and charts (the most expensive part of the UI) at most 4 times a second.
+ * and charts (the most expensive part of the UI) at most twice a second.
  */
 export class FrameBuffer {
   private tick: TickResult | null = null;

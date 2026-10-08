@@ -11,34 +11,86 @@ latency and capacity).
 
 **Live demo:** https://pavanit1217.github.io/SysSim/
 
-![System Design Simulator: a news feed design under a daily traffic wave](docs/screenshot.png)
+![System Design Simulator: the URL shortener scenario with the Insights panel explaining the bottleneck](docs/screenshot.png)
 
 ## Features
 
+**Model**
+
 - **Components:** Client, CDN, Load Balancer, Service, Cache, Queue, Database
-  (primary + read replicas), External API, with capacity, instances, latency
-  distribution, pool size, queue limits, timeouts, retries, hit ratio,
-  autoscaling and more.
+  (primary, read replicas, shards with hot-key skew) and External API. Each has
+  capacity, instances, a latency distribution, pool size, queue limit, timeout,
+  retries, hit ratio, autoscaling, cold starts and cost.
+- **Routing:** edges carry a weight and a traffic class (all, reads or
+  writes), so you can model CQRS-style splits. Load balancers health-check
+  their targets and route around dead ones.
+- **Resilience:** circuit breakers, retry budgets, exponential backoff with
+  jitter, rate limiting with load shedding, and availability zones.
 - **Hybrid simulation engine:** a rate-based flow layer (M/M/c queueing,
   backlogs, drops, timeouts, retry amplification) plus a sampled-request layer
   for p50/p95/p99 and request traces. It is deterministic for a given seed.
 - **Traffic:** a log-scale slider from 1 to 100M req/s; steady, daily wave,
   flash spike and ramp profiles; adjustable read/write ratio.
-- **Live view:** nodes coloured by utilisation, animated edges whose thickness
-  follows the flow, charts for latency, throughput, error rate and utilisation,
-  and a trace waterfall.
-- **Chaos:** kill a node, add latency, flush a cache, trigger a retry storm.
-- **Prep mode:** URL shortener, news feed and ticket flash-sale scenarios with goals.
-- **Validation mode:** enter measured p50/p99 and capacity, or import a CSV of latency samples.
-- **Persistence:** autosave, JSON import/export, and shareable links that carry
-  the design in the URL hash.
+
+**Analysis**
+
+- **Insights:** a plain-language bottleneck explainer, e.g. "Links DB is
+  overloaded (ρ = 10): add 15 read replicas, or a cache would cut its load to
+  21.8k/s". It also flags retry storms, timeouts, single-zone risk and
+  headroom.
+- **Capacity planner:** finds the leanest instances, replicas, shards or
+  consumers that meet a goal with at least 10% headroom, then applies the plan
+  in one click (and one undo step).
+- **Cost model:** instance-hours plus per-million-request pricing, shown live
+  per component. Scenario goals can include a monthly budget.
+- **Calculator:** back-of-the-envelope estimates (daily users → QPS, storage,
+  bandwidth) that can set the traffic directly.
+
+**Practice and validation**
+
+- **Nine scenarios** from warm-up to advanced: URL shortener, video CDN, news
+  feed, chat system, search typeahead, ticket flash sale, API rate limiting,
+  payment processing, and multi-region failover with a scripted zone outage.
+  Each has a goal with pass/fail feedback, hints that unlock as you fail, and
+  a tested reference solution.
+- **Validation mode:** calibrate a node from measured p50/p99 and capacity, or
+  import load-test results: k6 (summary or JSON output), Gatling
+  `simulation.log`, JMeter JTL or plain CSV.
+
+**Live view and chaos**
+
+- Nodes are coloured by utilisation with ρ gauges, edges carry flow particles,
+  and live charts show latency, goodput, errors and utilisation, with a trace
+  waterfall.
+- **Replay:** pause and scrub back through a run; the canvas shows each node's
+  state at that moment.
+- **Compare runs:** save up to four runs and overlay p99, p50, goodput or
+  error rate.
+- **Chaos:** kill a node or a whole zone, add latency, flush a cache, or
+  trigger a retry storm.
+
+**Editing and sharing**
+
+- Undo/redo, copy/paste/duplicate and one-click layered auto-layout.
+- Import from SysSim JSON, Mermaid flowcharts or draw.io files. Component
+  kinds are inferred from labels and shapes.
+- Export JSON, a Markdown report, or a printable PDF report with an
+  architecture diagram, charts and findings.
+- Autosave, plus compressed share links that carry the design in the URL hash.
 - **Flexible workspace:**
-  - Drag the splitters to resize the palette, inspector and chart dock, or
-    collapse any of them.
-  - Focus mode (`F`) hides all panels; `[`, `]` and `\` toggle each panel.
-  - Zoom, fit and minimap controls sit in a toolbar above the canvas, not over it.
-  - The layout is remembered between visits.
+  - Resizable, collapsible panels; focus mode with `F`.
+  - Zoom, fit and minimap controls sit in a toolbar above the canvas.
 - 100% client-side: no backend, no accounts.
+
+### Keyboard shortcuts
+
+| Keys                                        | Action                                        |
+| ------------------------------------------- | --------------------------------------------- |
+| `Ctrl/⌘ Z` / `Ctrl/⌘ Shift Z` (or `Ctrl Y`) | Undo / redo                                   |
+| `Ctrl/⌘ C` / `V` / `D`                      | Copy, paste, duplicate the selected component |
+| `Delete` / `Backspace`                      | Delete the selection                          |
+| `F`                                         | Focus mode (hide all panels)                  |
+| `[` / `]` / `\`                             | Toggle palette / inspector / charts           |
 
 ## Quick start
 

@@ -63,12 +63,23 @@ export interface GoalTracker {
  * Tracks a running simulation against a goal. The verdict is computed over
  * the most recent `holdSeconds` of ticks where offered load is at the target.
  */
-export function createGoalTracker(goal: ScenarioGoal, costOf?: CostFn): GoalTracker {
+export interface GoalTrackerOptions {
+  /** Keep the first pass/fail verdict until reset (for runs with scripted chaos). */
+  latch?: boolean;
+}
+
+export function createGoalTracker(
+  goal: ScenarioGoal,
+  costOf?: CostFn,
+  options: GoalTrackerOptions = {},
+): GoalTracker {
   let atTarget: Observation[] = [];
   let settle = 0;
+  let verdict: GoalStatus | null = null;
 
   const tracker: GoalTracker = {
     observe(result: TickResult): GoalStatus {
+      if (verdict) return verdict;
       if (result.offeredRps < goal.targetRps * 0.99) {
         atTarget = [];
         settle = 0;
@@ -87,7 +98,9 @@ export function createGoalTracker(goal: ScenarioGoal, costOf?: CostFn): GoalTrac
           atTarget.shift();
         }
       }
-      return tracker.status();
+      const status = tracker.status();
+      if (options.latch && status.state !== 'pending') verdict = status;
+      return status;
     },
     status(): GoalStatus {
       const first = atTarget[0];
@@ -144,6 +157,7 @@ export function createGoalTracker(goal: ScenarioGoal, costOf?: CostFn): GoalTrac
     reset(): void {
       atTarget = [];
       settle = 0;
+      verdict = null;
     },
   };
   return tracker;

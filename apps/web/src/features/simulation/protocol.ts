@@ -55,7 +55,7 @@ export type WorkerRequest =
   | { type: 'setSpeed'; speed: number }
   | { type: 'injectFault'; nodeId: string; fault: Fault; durationMs?: number }
   | { type: 'clearFault'; nodeId: string; kind?: FaultKind }
-  | { type: 'setGoal'; goal: ScenarioGoal | null }
+  | { type: 'setGoal'; goal: ScenarioGoal | null; latch: boolean }
   | { type: 'setChaos'; events: ScenarioChaos[] };
 
 /** Messages from the simulation worker to the UI thread. */

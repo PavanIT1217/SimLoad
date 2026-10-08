@@ -81,3 +81,21 @@ describe('goal tracker', () => {
     expect(status.progress).toBe(0);
   });
 });
+
+describe('latched goal tracker', () => {
+  it('keeps the first verdict until reset', () => {
+    const goal = { targetRps: 500, maxP99Ms: 50, maxErrorRate: 0.001, holdSeconds: 1 };
+    const sim = createSimulation(singleService({}, { peakRps: 500 }));
+    const tracker = createGoalTracker(goal, undefined, { latch: true });
+    sim.injectFault('svc', { kind: 'kill' });
+    let status = tracker.status();
+    for (let i = 0; i < 30; i++) status = tracker.observe(sim.step());
+    expect(status.state).toBe('fail');
+    sim.clearFault('svc');
+    for (let i = 0; i < 60; i++) status = tracker.observe(sim.step());
+    expect(status.state).toBe('fail');
+    tracker.reset();
+    for (let i = 0; i < 60; i++) status = tracker.observe(sim.step());
+    expect(status.state).toBe('pass');
+  });
+});

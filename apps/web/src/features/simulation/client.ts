@@ -78,8 +78,8 @@ class SimulationClient {
   clearFault(nodeId: string, kind?: FaultKind): void {
     this.send({ type: 'clearFault', nodeId, kind });
   }
-  setGoal(goal: ScenarioGoal | null): void {
-    this.send({ type: 'setGoal', goal });
+  setGoal(goal: ScenarioGoal | null, latch = false): void {
+    this.send({ type: 'setGoal', goal, latch });
   }
   setChaos(events: ScenarioChaos[]): void {
     this.send({ type: 'setChaos', events });

@@ -18,21 +18,30 @@ packages/engine/src
   model/     types, defaults, graph compilation, validateDesign
   traffic/   traffic profiles and the log-scale slider mapping
   sim/       pools (fluid queues), flow (forward pass), propagation (backward
-             pass), sampler, autoscale, faults/state, result, simulation loop
-  metrics/   percentiles, rolling window, scenario goals, latency calibration
+             pass), sampler, routing (per-class, LB health checks), resilience
+             (breakers, retry plans), autoscale, state, result, simulation loop,
+             planner (capacity search)
+  metrics/   percentiles, rolling window, scenario goals, calibration, cost,
+             diagnosis (insights + node rules)
   util/      seeded RNG (mulberry32), math (erf, lognormal helpers)
   index.ts   the only public entry point
 
 apps/web/src
   app/       shell: App, TopBar, layout, toast
   features/
-    canvas/       React Flow canvas, custom node and edge
+    canvas/       React Flow canvas, custom node and edge, toolbar, auto-layout
     palette/      draggable component palette
-    inspector/    node/edge inspectors, chaos actions, calibration, CSV parsing
-    metrics/      Recharts panels and the trace viewer
-    simulation/   worker, typed protocol, client, sync hook, controls
-    scenarios/    built-in prep scenarios, goal banner
-    persistence/  autosave, import/export, share links, JSON schema parsing
+    inspector/    tabbed right panel, node/edge inspectors, chaos, calibration,
+                  load-test parsers (k6, Gatling, JMeter, CSV)
+    insights/     bottleneck explainer and cost breakdown
+    planner/      capacity planner (own Web Worker)
+    estimator/    back-of-the-envelope calculator
+    metrics/      Recharts panels, trace viewer, replay bar, run comparison
+    simulation/   worker, typed protocol, client, frame buffer, sync hook
+    scenarios/    nine scenarios with reference solutions and scripted chaos
+    persistence/  autosave, JSON/Mermaid/draw.io import, compressed share links
+    report/       Markdown and printable (PDF) reports
+  state/          Zustand stores: design (with undo history), sim, ui, layout, runs
   state/     Zustand stores (design, sim, ui)
   ui/        shared primitives (Button, Field, Section, icons, formatting)
 ```
@@ -82,6 +91,40 @@ Each `step()`:
 - Queue: callers are acknowledged on enqueue, and the backlog drains to
   downstream at `consumerRps`.
 
+### Routing and resilience
+
+- **Request classes:** every edge carries `all`, `read` or `write` traffic.
+  Routes are compiled per class, so reads can go to a cache while writes go to
+  a queue. Shares are normalised within each class.
+- **Load balancers** health-check their targets: a killed or circuit-open
+  target is removed from rotation and its share is spread over the rest.
+  Other nodes keep static weights, so a dead dependency fails their calls.
+- **Circuit breakers** (closed → open → half-open with 10% probe traffic)
+  wrap calls into a node. While a breaker is open, callers fail fast instead
+  of queueing.
+- **Retry plans** combine the retry count, a budget that caps extra attempts as
+  a share of first attempts, and exponential backoff with full jitter (adds
+  latency, not load).
+- **Rate limits** shed load above a threshold as fast errors before it can
+  queue.
+- **Sharding:** effective capacity is per-shard capacity divided by the
+  hottest shard's share, `1/S + skew·(1 − 1/S)`.
+- **Cold starts:** instances added by autoscaling pay `coldStartMs` for 10 s.
+
+### Analysis
+
+- **`diagnose(design, tick)`** applies rules per node: down, breaker open,
+  overload, near saturation, timeouts, retry storm, shedding, cold cache, cold
+  start. It also adds system rules: single zone, and headroom when healthy.
+  Every suggestion is quantified from the live numbers.
+- **`planCapacity(design, goal)`** evaluates the design at the target load,
+  grows the current bottleneck (instances, read replicas, shards or consumers)
+  until the goal passes with ρ ≤ 0.9 everywhere, then trims each change back
+  while the goal still holds. It reports when a goal is latency-bound and
+  capacity can't fix it.
+- **`estimateCost(design, tick)`** adds instance-hours (billable instances,
+  counting replicas and shards) to per-million-request usage.
+
 ### Determinism
 
 All randomness goes through one seeded `Rng`, consumed in a fixed order. The
@@ -106,10 +149,18 @@ gives byte-identical `TickResult`s; a test checks this.
   - The worker caps simulation work at about 70% of each 50 ms frame, so at
     high speeds it slows down instead of falling behind.
   - `FrameBuffer` coalesces worker frames into one store update per animation
-    frame, and flushes chart history at most 4 times a second.
+    frame, and flushes chart history at most twice a second. Charts draw at
+    most 150 points per series.
   - Charts read their data through `useDeferredValue` and are memoised, so a
     redraw is interruptible, low-priority work that never blocks dragging.
   - Node and edge components subscribe to their own slice of the latest tick.
+- **Replay:** each chart point carries a compact per-node snapshot. While
+  paused, the scrubber selects a point and canvas nodes render from it.
+- **Undo history:** the design store keeps up to 100 undo steps. Rapid edits
+  with the same key (dragging a node, typing a name, moving the traffic
+  slider) merge into one step.
+- **Scenario chaos** (zone outages) runs inside the simulation worker at exact
+  tick boundaries. Goals with chaos keep their first verdict until Reset.
 - **Persistence:** every load path goes through `parseDesign`, which validates
   untrusted JSON and fills missing fields with defaults.
 

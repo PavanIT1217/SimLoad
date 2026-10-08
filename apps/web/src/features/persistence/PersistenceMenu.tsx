@@ -27,12 +27,19 @@ export function PersistenceMenu() {
   };
 
   const onShare = async () => {
-    const url = await shareUrl(useDesignStore.getState().design, window.location);
+    const pending = shareUrl(useDesignStore.getState().design, window.location);
     try {
-      await navigator.clipboard.writeText(url);
-      showToast(`Share link copied (${url.length.toLocaleString()} characters)`);
+      // Start the clipboard write inside the click (user activation) and resolve the
+      // compressed URL later; fall back to writeText where ClipboardItem is missing.
+      if (typeof ClipboardItem !== 'undefined') {
+        const blob = pending.then((url) => new Blob([url], { type: 'text/plain' }));
+        await navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })]);
+      } else {
+        await navigator.clipboard.writeText(await pending);
+      }
+      showToast(`Share link copied (${(await pending).length.toLocaleString()} characters)`);
     } catch {
-      window.prompt('Copy this share link', url);
+      window.prompt('Copy this share link', await pending);
     }
   };
 

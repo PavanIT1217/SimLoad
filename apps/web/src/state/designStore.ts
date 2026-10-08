@@ -26,6 +26,8 @@ export interface DesignState extends HistoryState {
   addNode(kind: ComponentKind, position: Position): string;
   updateNode(id: string, patch: Partial<Pick<DesignNode, 'label' | 'zone'>>): void;
   updateNodeConfig(id: string, patch: Partial<NodeConfig>): void;
+  /** Applies config patches to several nodes as one undo step (e.g. a capacity plan). */
+  applyConfigs(patches: Record<string, Partial<NodeConfig>>): void;
   moveNode(id: string, position: Position): void;
   /** Moves many nodes as one undo step (auto-layout). */
   moveNodes(positions: Record<string, Position>): void;
@@ -118,6 +120,14 @@ export const useDesignStore = create<DesignState>()((set, get) => {
 
     updateNodeConfig: (id, patch) =>
       edit((d) => mapNode(d, id, (n) => ({ ...n, config: { ...n.config, ...patch } }))),
+
+    applyConfigs: (patches) =>
+      edit((d) => ({
+        ...d,
+        nodes: d.nodes.map((n) =>
+          patches[n.id] ? { ...n, config: { ...n.config, ...patches[n.id] } } : n,
+        ),
+      })),
 
     moveNode: (id, position) =>
       edit((d) => mapNode(d, id, (n) => ({ ...n, position })), `move:${id}`),

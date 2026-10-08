@@ -52,7 +52,14 @@ export { erlangC, littlesLaw, mmcWaitMs } from './sim/queueing';
 
 export type { LatencySummary } from './metrics/percentiles';
 export { percentile, summarize } from './metrics/percentiles';
-export type { CostFn, GoalCheck, GoalStatus, GoalTracker, ScenarioGoal } from './metrics/goals';
+export type {
+  CostFn,
+  GoalCheck,
+  GoalTrackerOptions,
+  GoalStatus,
+  GoalTracker,
+  ScenarioGoal,
+} from './metrics/goals';
 export { createGoalTracker, describeGoal } from './metrics/goals';
 export type { LatencyFit } from './metrics/calibration';
 export {

@@ -139,7 +139,9 @@ function handle(msg: WorkerRequest): void {
     case 'setGoal':
       // Budget goals price each tick against the design currently being simulated.
       goal = msg.goal
-        ? createGoalTracker(msg.goal, (t) => (sim ? estimateCost(sim.design, t).totalMonthly : 0))
+        ? createGoalTracker(msg.goal, (t) => (sim ? estimateCost(sim.design, t).totalMonthly : 0), {
+            latch: msg.latch,
+          })
         : null;
       return;
   }

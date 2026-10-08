@@ -30,3 +30,14 @@ describe('saved runs', () => {
     expect(summary.durationS).toBe(9);
   });
 });
+
+describe('chart downsampling', () => {
+  it('keeps at most N points including the latest', async () => {
+    const { downsample } = await import('../src/features/metrics/useChartHistory');
+    const points = Array.from({ length: 300 }, (_, i) => i);
+    const thin = downsample(points, 150);
+    expect(thin).toHaveLength(150);
+    expect(thin.at(-1)).toBe(299);
+    expect(downsample([1, 2, 3], 150)).toEqual([1, 2, 3]);
+  });
+});

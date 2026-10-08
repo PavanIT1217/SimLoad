@@ -10,7 +10,8 @@ export function useScenarioGoal(): void {
   useEffect(() => {
     const scenario = findScenario(scenarioId);
     const active = mode === 'prep' && scenario;
-    simulation.setGoal(active ? scenario.goal : null);
+    // With scripted chaos the outage is the test: keep the verdict until Reset.
+    simulation.setGoal(active ? scenario.goal : null, !!active && !!scenario.chaos?.length);
     simulation.setChaos(active ? (scenario.chaos ?? []) : []);
   }, [scenarioId, mode]);
 }

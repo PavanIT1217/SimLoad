@@ -1,7 +1,10 @@
+import type { ReactNode } from 'react';
+
 export interface TabItem<T extends string> {
   id: T;
   label: string;
-  badge?: string | number;
+  /** Rendered after the label; a component so live counts don't re-render the tab owner. */
+  badge?: ReactNode;
 }
 
 export interface TabsProps<T extends string> {
@@ -36,7 +39,7 @@ export function Tabs<T extends string>({ items, value, onChange, label }: TabsPr
           onClick={() => onChange(t.id)}
         >
           {t.label}
-          {t.badge !== undefined && t.badge !== 0 && <span className="tab-badge">{t.badge}</span>}
+          {t.badge}
         </button>
       ))}
     </div>

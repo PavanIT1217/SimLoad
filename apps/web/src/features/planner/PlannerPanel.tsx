@@ -46,8 +46,9 @@ export function PlannerPanel() {
 
   const apply = () => {
     if (!result) return;
-    const store = useDesignStore.getState();
-    for (const c of result.changes) store.updateNodeConfig(c.nodeId, { [c.field]: c.to });
+    const patches: Record<string, Partial<Record<PlanChange['field'], number>>> = {};
+    for (const c of result.changes) patches[c.nodeId] = { ...patches[c.nodeId], [c.field]: c.to };
+    useDesignStore.getState().applyConfigs(patches);
     useUiStore.getState().showToast(`Applied ${result.changes.length} change(s) from the planner`);
   };
 

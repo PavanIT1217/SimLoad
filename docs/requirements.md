@@ -78,6 +78,22 @@ Edges carry a routing weight.
 - Export and import design JSON.
 - Shareable link with the design encoded in the URL hash.
 
+## v1.1 additions
+
+- Read/write edge routing, circuit breakers, retry budgets and backoff, rate
+  limiting, availability zones with zone-outage chaos, and health-checked load
+  balancing.
+- Database sharding with hot-key skew, and cold starts after scale-out.
+- Cost model, with optional budget goals.
+- Bottleneck explainer, capacity planner and back-of-the-envelope calculator.
+- Nine scenarios with staged hints and tested reference solutions.
+- Undo/redo, copy/paste, auto-layout, replay and run comparison.
+- Imports: k6, Gatling, JMeter and CSV latency data; Mermaid and draw.io
+  designs.
+- Markdown and PDF reports, and compressed share links.
+- Everything above runs client-side; usage analytics remain out of scope
+  because they need a third-party collector.
+
 ## Out of scope (v1)
 
 Live calls to real APIs, cloud cost estimation, multiplayer, accounts.

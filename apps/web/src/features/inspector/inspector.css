@@ -1,0 +1,87 @@
+.inspector {
+  overflow-y: auto;
+  padding: 12px;
+}
+.inspector-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.inspector-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.inspector-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-sunken);
+  color: var(--accent);
+  flex: none;
+}
+.inspector-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.inspector-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+.chaos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.chaos-latency {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+}
+.chaos-latency .field {
+  flex: 1;
+}
+.fit-result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  font-size: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--bg-sunken);
+}
+.file-button {
+  display: inline-flex;
+  align-self: flex-start;
+  cursor: pointer;
+}
+.issue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.issue-button {
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: var(--warn-bg);
+  cursor: pointer;
+}
+.issue-error .issue-button {
+  background: var(--bad-bg);
+}
+.issue-button:disabled {
+  cursor: default;
+}

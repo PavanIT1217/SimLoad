@@ -1,0 +1,130 @@
+// Runs the engine off the main thread so the UI stays responsive at any speed.
+import { createGoalTracker, createSimulation } from '@syssim/engine';
+import type { GoalTracker, Simulation, TickResult } from '@syssim/engine';
+import { toChartPoint } from './aggregate';
+import type { WorkerRequest, WorkerResponse } from './protocol';
+import { FRAME_MS } from './protocol';
+
+const MAX_TRACES_PER_FRAME = 20;
+
+let sim: Simulation | null = null;
+let goal: GoalTracker | null = null;
+let running = false;
+let speed = 1;
+let carry = 0;
+let timer: ReturnType<typeof setInterval> | null = null;
+
+function post(message: WorkerResponse): void {
+  self.postMessage(message);
+}
+
+function postStatus(): void {
+  post({ type: 'status', running, ready: sim !== null });
+}
+
+function fail(error: unknown): void {
+  running = false;
+  stopTimer();
+  post({ type: 'error', message: error instanceof Error ? error.message : String(error) });
+  postStatus();
+}
+
+function emit(ticks: TickResult[]): void {
+  const last = ticks[ticks.length - 1];
+  const point = toChartPoint(ticks);
+  if (!last || !point) return;
+  let status = goal?.status() ?? null;
+  for (const t of ticks) status = goal?.observe(t) ?? null;
+  const traces = ticks.flatMap((t) => t.traces).slice(-MAX_TRACES_PER_FRAME);
+  post({ type: 'frame', tick: last, points: [point], traces, goal: status });
+}
+
+function advance(count: number): void {
+  if (!sim || count <= 0) return;
+  const ticks: TickResult[] = [];
+  for (let i = 0; i < count; i++) ticks.push(sim.step());
+  emit(ticks);
+}
+
+function onFrame(): void {
+  if (!sim || !running) return;
+  // At 1x one 100 ms tick runs per 100 ms of wall time; speed multiplies that.
+  carry += (speed * FRAME_MS) / 100;
+  const count = Math.floor(carry);
+  carry -= count;
+  try {
+    advance(count);
+  } catch (error) {
+    fail(error);
+  }
+}
+
+function startTimer(): void {
+  if (timer === null) timer = setInterval(onFrame, FRAME_MS);
+}
+
+function stopTimer(): void {
+  if (timer !== null) clearInterval(timer);
+  timer = null;
+}
+
+function handle(msg: WorkerRequest): void {
+  switch (msg.type) {
+    case 'load':
+      sim = createSimulation(msg.design, { seed: msg.seed });
+      goal?.reset();
+      carry = 0;
+      post({ type: 'reset' });
+      postStatus();
+      return;
+    case 'updateDesign':
+      if (sim) sim.updateDesign(msg.design);
+      else sim = createSimulation(msg.design);
+      postStatus();
+      return;
+    case 'setTraffic':
+      sim?.setTraffic(msg.traffic);
+      return;
+    case 'play':
+      if (!sim) return;
+      running = true;
+      startTimer();
+      postStatus();
+      return;
+    case 'pause':
+      running = false;
+      stopTimer();
+      postStatus();
+      return;
+    case 'step':
+      advance(1);
+      return;
+    case 'reset':
+      sim?.reset();
+      goal?.reset();
+      carry = 0;
+      post({ type: 'reset' });
+      return;
+    case 'setSpeed':
+      speed = Math.max(0.1, msg.speed);
+      return;
+    case 'injectFault':
+      sim?.injectFault(msg.nodeId, msg.fault, msg.durationMs);
+      return;
+    case 'clearFault':
+      sim?.clearFault(msg.nodeId, msg.kind);
+      return;
+    case 'setGoal':
+      goal = msg.goal ? createGoalTracker(msg.goal) : null;
+      return;
+  }
+}
+
+self.onmessage = (event: MessageEvent<WorkerRequest>) => {
+  try {
+    handle(event.data);
+  } catch (error) {
+    if (event.data.type === 'load' || event.data.type === 'updateDesign') sim = null;
+    fail(error);
+  }
+};

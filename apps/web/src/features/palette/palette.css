@@ -1,0 +1,78 @@
+.palette {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  overflow-y: auto;
+}
+.palette ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.palette-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: grab;
+  text-align: left;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+}
+.palette-item:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+.palette-item:active {
+  cursor: grabbing;
+}
+.palette-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: var(--bg-sunken);
+  color: var(--accent);
+  flex: none;
+}
+.palette-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.palette-name {
+  font-weight: 600;
+}
+.palette-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.palette-tip {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+@media (max-width: 900px) {
+  .palette ul {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .palette-item {
+    width: auto;
+  }
+  .palette-desc,
+  .palette-tip {
+    display: none;
+  }
+}

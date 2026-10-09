@@ -11,7 +11,8 @@ import { UtilizationChart } from './UtilizationChart';
 import './metrics.css';
 
 const TABS: { id: DockTab; label: string }[] = [
-  { id: 'live', label: 'Live' },
+  { id: 'live', label: 'Charts' },
+  { id: 'traces', label: 'Traces' },
   { id: 'compare', label: 'Compare runs' },
 ];
 
@@ -22,7 +23,7 @@ export function MetricsPanel() {
     <section className="metrics-dock" aria-label="Metrics">
       <div className="dock-head">
         <Tabs items={TABS} value={tab} onChange={setTab} label="Metrics view" />
-        {tab === 'live' && <ReplayBar />}
+        {tab !== 'compare' && <ReplayBar />}
       </div>
       {tab === 'live' ? (
         <div className="metrics" role="tabpanel">
@@ -30,6 +31,9 @@ export function MetricsPanel() {
           <ThroughputChart />
           <ErrorChart />
           <UtilizationChart />
+        </div>
+      ) : tab === 'traces' ? (
+        <div className="metrics metrics-traces" role="tabpanel">
           <TraceViewer />
         </div>
       ) : (

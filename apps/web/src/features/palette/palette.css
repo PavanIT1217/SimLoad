@@ -11,17 +11,17 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 .palette-item {
   width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 7px 8px;
+  padding: 4px 6px;
   border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--surface);
+  border: 1px solid transparent;
+  background: transparent;
   cursor: grab;
   text-align: left;
   transition:
@@ -30,8 +30,7 @@
 }
 .palette-item:hover {
   background: var(--surface-hover);
-  border-color: var(--accent);
-  box-shadow: inset 2px 0 0 var(--accent);
+  border-color: var(--border);
 }
 .palette-item:active {
   cursor: grabbing;
@@ -39,32 +38,24 @@
 .palette-icon {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--bg-sunken);
   color: var(--accent);
   flex: none;
 }
-.palette-text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
 .palette-name {
-  font-weight: 600;
-}
-.palette-desc {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
 }
 .palette-tip {
   margin: 4px 0 0;
-  font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-faint);
 }
 
@@ -76,7 +67,6 @@
   .palette-item {
     width: auto;
   }
-  .palette-desc,
   .palette-tip {
     display: none;
   }

@@ -15,11 +15,13 @@
 /* ---------- Top bar ---------- */
 .topbar {
   position: relative;
+  /* Above the splitters, so menus that drop from the bar are not cut through. */
+  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 16px;
-  padding: 8px 14px;
+  padding: 6px 14px;
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(10px);
@@ -41,24 +43,12 @@
   gap: 10px;
   white-space: nowrap;
 }
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
 .brand-name {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
   letter-spacing: 0.14em;
   color: var(--text);
-}
-.brand-sub {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-muted);
 }
 .logo-orbit {
   fill: none;
@@ -83,40 +73,6 @@
   }
 }
 
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 8px;
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--text-faint);
-}
-.status-chip.is-live {
-  color: var(--ok);
-  border-color: color-mix(in srgb, var(--ok) 40%, transparent);
-}
-.status-chip.is-live .status-dot {
-  background: var(--ok);
-  box-shadow: 0 0 6px var(--ok);
-  animation: pulse 1.4s ease-in-out infinite;
-}
-@keyframes pulse {
-  50% {
-    opacity: 0.25;
-  }
-}
-
 .topbar-group {
   display: flex;
   flex-wrap: wrap;
@@ -132,10 +88,7 @@
   gap: 2px;
 }
 .topbar-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-size: 10.5px;
   color: var(--text-muted);
 }
 .topbar-label strong {
@@ -143,14 +96,8 @@
   letter-spacing: 0;
   font-weight: 600;
 }
-.topbar-seed .input {
-  width: 84px;
-}
 .traffic-slider input {
   width: 180px;
-}
-.traffic-ratio input {
-  width: 90px;
 }
 .sim-clock {
   min-width: 64px;
@@ -175,48 +122,37 @@
 
 /* ---------- Telemetry strip ---------- */
 .telemetry {
-  display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
+  display: flex;
   border-bottom: 1px solid var(--border);
   background: var(--bg-sunken);
 }
 .readout {
+  flex: 1 1 0;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 14px;
+  flex-direction: column;
+  padding: 5px 14px;
   border-right: 1px solid var(--border);
   min-width: 0;
+}
+.readout.is-wide {
+  flex-grow: 2;
 }
 .readout:last-child {
   border-right: 0;
 }
-.readout-symbol {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  font-style: italic;
-  color: var(--accent);
-  min-width: 22px;
-  opacity: 0.85;
-}
-.readout-body {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
 .readout-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 10.5px;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .readout-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .readout.tone-ok .readout-value {
   color: var(--ok);
@@ -225,9 +161,6 @@
   color: var(--warn);
 }
 .readout.tone-bad .readout-value {
-  color: var(--bad);
-}
-.readout.tone-bad .readout-symbol {
   color: var(--bad);
 }
 
@@ -365,9 +298,6 @@
   padding: 10px 6px;
   align-items: center;
 }
-.palette.is-collapsed .panel-title::before {
-  content: '';
-}
 .palette.is-collapsed .palette-text,
 .palette.is-collapsed .palette-tip {
   display: none;
@@ -409,18 +339,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .logo.is-active .logo-spin,
-  .status-chip.is-live .status-dot {
+  .logo.is-active .logo-spin {
     animation: none;
   }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1100px) {
   .telemetry {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    flex-wrap: wrap;
   }
-  .readout:nth-child(4) {
-    border-right: 0;
+  .readout {
+    flex-basis: 25%;
   }
 }
 
@@ -436,7 +365,8 @@
   }
   .workspace {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 0 60vh 0 auto;
+    /* The splitters are display: none here, so they take no grid rows. */
+    grid-template-rows: auto 60vh auto;
   }
   .app > .metrics-dock {
     max-height: none;
@@ -455,13 +385,8 @@
   .traffic-slider input {
     width: 140px;
   }
-  .telemetry {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .readout {
+    flex-basis: 50%;
     padding: 5px 10px;
-  }
-  .readout:nth-child(2n) {
-    border-right: 0;
   }
 }

@@ -1,7 +1,6 @@
 import { useDesignStore } from '../../state/designStore';
 import { useSimStore } from '../../state/simStore';
 import { useUiStore } from '../../state/uiStore';
-import { Button } from '../../ui/Button';
 import { designFileName } from '../persistence/designFile';
 import { findScenario } from '../scenarios';
 import { buildMarkdownReport } from './markdownReport';
@@ -23,37 +22,18 @@ function download(text: string, name: string, type: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-/** Markdown and printable (PDF) design-review reports. */
-export function ReportButtons() {
-  const showToast = useUiStore((s) => s.showToast);
-  return (
-    <>
-      <Button
-        size="sm"
-        variant="ghost"
-        title="Download a Markdown report"
-        onClick={() => {
-          const data = currentReport();
-          download(
-            buildMarkdownReport(data),
-            designFileName(data.design).replace('.simload.json', '.report.md'),
-            'text/markdown',
-          );
-        }}
-      >
-        Report
-      </Button>
-      <Button
-        size="sm"
-        variant="ghost"
-        title="Open a printable report (Save as PDF)"
-        onClick={() => {
-          if (!printReport(currentReport()))
-            showToast('Allow pop-ups to open the printable report');
-        }}
-      >
-        PDF
-      </Button>
-    </>
+/** Downloads the design-review report as Markdown. */
+export function downloadMarkdownReport(): void {
+  const data = currentReport();
+  download(
+    buildMarkdownReport(data),
+    designFileName(data.design).replace('.simload.json', '.report.md'),
+    'text/markdown',
   );
+}
+
+/** Opens the printable report (Save as PDF), or explains that pop-ups are blocked. */
+export function openPrintableReport(): void {
+  if (!printReport(currentReport()))
+    useUiStore.getState().showToast('Allow pop-ups to open the printable report');
 }

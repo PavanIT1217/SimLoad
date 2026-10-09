@@ -11,9 +11,9 @@ export interface PanelLimits {
 
 /** Size limits in px: widths for side panels, height for the metrics dock. */
 export const PANEL_LIMITS: Record<PanelId, PanelLimits> = {
-  palette: { min: 160, max: 360, initial: 220 },
+  palette: { min: 150, max: 360, initial: 180 },
   inspector: { min: 260, max: 560, initial: 340 },
-  metrics: { min: 160, max: 560, initial: 300 },
+  metrics: { min: 160, max: 560, initial: 260 },
 };
 
 /** CSS custom property each panel's size is written to. */
@@ -23,7 +23,9 @@ export const PANEL_VARS: Record<PanelId, string> = {
   metrics: '--metrics-h',
 };
 
-const STORAGE_KEY = 'simload:layout:v1';
+const STORAGE_KEY = 'simload:layout:v2';
+/** v1 stored the minimap as on by default; its sizes and collapsed panels carry over. */
+const LEGACY_KEY = 'simload:layout:v1';
 
 export interface LayoutState {
   sizes: Record<PanelId, number>;
@@ -40,9 +42,9 @@ export interface LayoutState {
 type Persisted = Pick<LayoutState, 'sizes' | 'collapsed' | 'minimap'>;
 
 const DEFAULTS: Persisted = {
-  sizes: { palette: 220, inspector: 340, metrics: 300 },
+  sizes: { palette: 180, inspector: 340, metrics: 260 },
   collapsed: { palette: false, inspector: false, metrics: false },
-  minimap: true,
+  minimap: false,
 };
 
 export function clampSize(panel: PanelId, size: number): number {
@@ -52,9 +54,11 @@ export function clampSize(panel: PanelId, size: number): number {
 
 function load(): Persisted {
   try {
-    const raw = readStorage(STORAGE_KEY);
+    const current = readStorage(STORAGE_KEY);
+    const raw = current ?? readStorage(LEGACY_KEY);
     if (!raw) return DEFAULTS;
     const data = JSON.parse(raw) as Partial<Persisted>;
+    if (current === null) delete data.minimap;
     const sizes = { ...DEFAULTS.sizes, ...data.sizes };
     for (const panel of Object.keys(sizes) as PanelId[])
       sizes[panel] = clampSize(panel, sizes[panel]);

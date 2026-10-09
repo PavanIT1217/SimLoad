@@ -5,7 +5,7 @@ import { readStorage, writeStorage } from '../features/persistence/storage';
 export type Theme = 'dark' | 'light';
 export type Mode = 'prep' | 'validation';
 export type RightTab = 'inspect' | 'insights' | 'plan' | 'calc';
-export type DockTab = 'live' | 'compare';
+export type DockTab = 'live' | 'traces' | 'compare';
 
 const THEME_KEY = 'simload:theme';
 

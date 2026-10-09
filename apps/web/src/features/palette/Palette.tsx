@@ -42,21 +42,18 @@ export function Palette({ collapsed = false }: PaletteProps) {
               draggable
               onDragStart={(e) => onDragStart(e, kind)}
               onClick={() => addNode(kind, { x: 80 + (count % 5) * 60, y: 60 + (count % 7) * 50 })}
-              title={`${KIND_LABELS[kind]}: drag onto the canvas, or click to add`}
+              title={`${KIND_LABELS[kind]}: ${DESCRIPTIONS[kind].toLowerCase()}. Drag onto the canvas, or click to add.`}
               aria-label={`Add ${KIND_LABELS[kind]}`}
             >
               <span className={`palette-icon kind-${kind}`}>
                 <KindIcon kind={kind} />
               </span>
-              <span className="palette-text">
-                <span className="palette-name">{KIND_LABELS[kind]}</span>
-                <span className="palette-desc">{DESCRIPTIONS[kind]}</span>
-              </span>
+              <span className="palette-text palette-name">{KIND_LABELS[kind]}</span>
             </button>
           </li>
         ))}
       </ul>
-      <p className="palette-tip">Connect nodes by dragging from a right handle to a left handle.</p>
+      <p className="palette-tip">Drag from a right handle to a left handle to connect.</p>
     </nav>
   );
 }

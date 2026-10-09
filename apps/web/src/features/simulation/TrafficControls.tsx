@@ -2,6 +2,7 @@ import { PROFILE_LABELS, TRAFFIC_PROFILES, rpsToSlider, sliderToRps } from '@sim
 import type { TrafficProfile } from '@simload/engine';
 import { useDesignStore } from '../../state/designStore';
 import { formatRps } from '../../ui/format';
+import { Menu } from '../../ui/Menu';
 
 const SLIDER_STEPS = 1000;
 
@@ -25,32 +26,41 @@ export function TrafficControls() {
           aria-valuetext={formatRps(traffic.peakRps)}
         />
       </label>
-      <label className="topbar-field">
-        <span className="topbar-label">Profile</span>
-        <select
-          className="input"
-          value={traffic.profile}
-          onChange={(e) => setTraffic({ profile: e.target.value as TrafficProfile })}
-        >
-          {TRAFFIC_PROFILES.map((p) => (
-            <option key={p} value={p}>
-              {PROFILE_LABELS[p]}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="topbar-field traffic-ratio">
-        <span className="topbar-label">
-          Reads <strong className="mono">{Math.round(traffic.readRatio * 100)}%</strong>
-        </span>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={Math.round(traffic.readRatio * 100)}
-          onChange={(e) => setTraffic({ readRatio: Number(e.target.value) / 100 })}
-        />
-      </label>
+      <Menu
+        label={`${PROFILE_LABELS[traffic.profile]} · ${Math.round(traffic.readRatio * 100)}% reads ▾`}
+        title="Traffic profile and read/write mix"
+      >
+        {() => (
+          <div className="menu-form">
+            <label className="menu-field">
+              <span>Profile</span>
+              <select
+                className="input"
+                value={traffic.profile}
+                onChange={(e) => setTraffic({ profile: e.target.value as TrafficProfile })}
+              >
+                {TRAFFIC_PROFILES.map((p) => (
+                  <option key={p} value={p}>
+                    {PROFILE_LABELS[p]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="menu-field">
+              <span>
+                Reads <strong className="mono">{Math.round(traffic.readRatio * 100)}%</strong>
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Math.round(traffic.readRatio * 100)}
+                onChange={(e) => setTraffic({ readRatio: Number(e.target.value) / 100 })}
+              />
+            </label>
+          </div>
+        )}
+      </Menu>
     </div>
   );
 }

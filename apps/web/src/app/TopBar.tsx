@@ -17,13 +17,8 @@ export function TopBar() {
     <header className="topbar">
       <div className="brand">
         <Logo active={running} />
-        <span className="brand-text">
-          <span className="brand-name">SIM//LOAD</span>
-          <span className="brand-sub">System design simulator</span>
-        </span>
-        <span className={`status-chip ${running ? 'is-live' : ''}`}>
-          <span className="status-dot" aria-hidden="true" />
-          {running ? 'Live' : 'Standby'}
+        <span className="brand-name" title="SimLoad: system design simulator">
+          SIM//LOAD
         </span>
       </div>
       <div className="segmented" role="group" aria-label="Mode">
@@ -46,7 +41,7 @@ export function TopBar() {
         aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
         title={theme === 'dark' ? 'Lab notebook (light)' : 'Mission control (dark)'}
       >
-        {theme === 'dark' ? '◐ Light' : '◑ Dark'}
+        {theme === 'dark' ? 'Light' : 'Dark'}
       </Button>
     </header>
   );

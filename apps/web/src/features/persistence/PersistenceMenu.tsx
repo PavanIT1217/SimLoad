@@ -2,8 +2,8 @@ import type { ChangeEvent } from 'react';
 import { useRef } from 'react';
 import { useDesignStore } from '../../state/designStore';
 import { useUiStore } from '../../state/uiStore';
-import { Button } from '../../ui/Button';
-import { ReportButtons } from '../report/ReportButtons';
+import { Menu, MenuItem } from '../../ui/Menu';
+import { downloadMarkdownReport, openPrintableReport } from '../report/reportActions';
 import { loadScenario } from '../scenarios/loadScenario';
 import { exportDesign, importDesign } from './designFile';
 import { shareUrl } from './shareLink';
@@ -43,19 +43,37 @@ export function PersistenceMenu() {
     }
   };
 
+  // The file input lives outside the popover so it survives the menu closing.
   return (
-    <div className="topbar-group" role="group" aria-label="Design file">
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => loadScenario(null)}
-        title="Start a blank design"
-      >
-        New
-      </Button>
-      <Button size="sm" variant="ghost" onClick={() => fileInput.current?.click()}>
-        Import
-      </Button>
+    <>
+      <Menu label="File ▾" align="end" title="New, import, export, share and reports">
+        {(close) => {
+          const run = (action: () => void) => () => {
+            close();
+            action();
+          };
+          return (
+            <>
+              <MenuItem onClick={run(() => loadScenario(null))}>New blank design</MenuItem>
+              <MenuItem
+                onClick={run(() => fileInput.current?.click())}
+                hint="JSON, Mermaid, draw.io"
+              >
+                Import…
+              </MenuItem>
+              <MenuItem onClick={run(() => exportDesign(useDesignStore.getState().design))}>
+                Export design
+              </MenuItem>
+              <hr className="menu-sep" />
+              <MenuItem onClick={run(() => void onShare())}>Copy share link</MenuItem>
+              <MenuItem onClick={run(downloadMarkdownReport)} hint=".md">
+                Download report
+              </MenuItem>
+              <MenuItem onClick={run(openPrintableReport)}>Printable report (PDF)</MenuItem>
+            </>
+          );
+        }}
+      </Menu>
       <input
         ref={fileInput}
         type="file"
@@ -63,17 +81,6 @@ export function PersistenceMenu() {
         hidden
         onChange={onImport}
       />
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => exportDesign(useDesignStore.getState().design)}
-      >
-        Export
-      </Button>
-      <Button size="sm" variant="ghost" onClick={onShare}>
-        Share link
-      </Button>
-      <ReportButtons />
-    </div>
+    </>
   );
 }

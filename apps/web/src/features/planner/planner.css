@@ -39,10 +39,7 @@
   border-left-color: var(--ok);
 }
 .plan-eval-title {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 11px;
   color: var(--text-muted);
 }
 .plan-changes {

@@ -6,10 +6,8 @@
   box-shadow: inset 3px 0 0 var(--accent-2);
 }
 .goal-banner strong {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 12.5px;
+  font-weight: 600;
   color: var(--accent-2);
 }
 .goal-banner.goal-pass {
@@ -27,12 +25,9 @@
   gap: 6px 12px;
 }
 .goal-pill {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 2px 8px;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 1px 8px;
   border-radius: 2px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -87,10 +82,7 @@
   padding-left: 18px;
 }
 .difficulty {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 10.5px;
   padding: 1px 6px;
   border-radius: 2px;
   border: 1px solid currentColor;

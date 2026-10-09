@@ -49,20 +49,20 @@ function ScenarioBanner({ scenario }: { scenario: Scenario }) {
             <span style={{ width: `${Math.round(status.progress * 100)}%` }} />
           </span>
         )}
-        <span className="goal-checks mono">
-          {status?.checks.map((c) => (
-            <span key={c.label} className={c.ok ? 'is-ok' : 'is-bad'}>
-              {checkText(c)}
-            </span>
-          ))}
-        </span>
+        {/* Live numbers are in the telemetry strip; show per-check results once judged. */}
+        {state !== 'pending' && (
+          <span className="goal-checks mono">
+            {status?.checks.map((c) => (
+              <span key={c.label} className={c.ok ? 'is-ok' : 'is-bad'}>
+                {checkText(c)}
+              </span>
+            ))}
+          </span>
+        )}
         <span className="goal-message muted">{status?.message}</span>
         <span className="goal-actions">
           <Button size="sm" variant="ghost" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
             {open ? 'Hide brief' : `Brief & hints ${revealed}/${scenario.hints.length}`}
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => loadScenario(scenario.id)}>
-            Restart
           </Button>
         </span>
       </div>
@@ -85,6 +85,9 @@ function ScenarioBanner({ scenario }: { scenario: Scenario }) {
                 Next hint
               </Button>
             )}
+            <Button size="sm" variant="ghost" onClick={() => loadScenario(scenario.id)}>
+              Restart scenario
+            </Button>
             <Button size="sm" variant="ghost" onClick={showSolution}>
               Load reference solution
             </Button>

@@ -13,7 +13,7 @@ export function ReplayBar() {
   const disabled = running || history.length < 2;
   return (
     <div className={`replay-bar ${index !== null ? 'is-replaying' : ''}`}>
-      <span className="replay-label mono">{index !== null ? 'REPLAY' : 'LIVE'}</span>
+      {index !== null && <span className="replay-label mono">Replay</span>}
       <input
         type="range"
         min={0}
@@ -29,9 +29,11 @@ export function ReplayBar() {
         }}
       />
       <span className="replay-time mono">T+{formatSimTime((point?.t ?? 0) * 1000)}</span>
-      <Button size="sm" variant="ghost" disabled={index === null} onClick={() => setIndex(null)}>
-        Live
-      </Button>
+      {index !== null && (
+        <Button size="sm" variant="ghost" onClick={() => setIndex(null)}>
+          Back to live
+        </Button>
+      )}
     </div>
   );
 }

@@ -2,26 +2,8 @@ import { useReactFlow, useViewport } from '@xyflow/react';
 import { useDesignStore } from '../../state/designStore';
 import { useLayoutStore } from '../../state/layoutStore';
 import { autoLayout } from './autoLayout';
-import type { PanelId } from '../../state/layoutStore';
 
 const FIT_OPTIONS = { padding: 0.2, maxZoom: 1.2, duration: 250 };
-
-function PanelToggle({ panel, label, glyph }: { panel: PanelId; label: string; glyph: string }) {
-  const shown = useLayoutStore((s) => !s.collapsed[panel]);
-  const toggle = useLayoutStore((s) => s.toggle);
-  return (
-    <button
-      type="button"
-      className={`tool ${shown ? 'is-on' : ''}`}
-      aria-pressed={shown}
-      onClick={() => toggle(panel)}
-      title={`${shown ? 'Hide' : 'Show'} ${label}`}
-    >
-      <span aria-hidden="true">{glyph}</span>
-      <span className="tool-text">{label}</span>
-    </button>
-  );
-}
 
 /**
  * Viewport and layout controls in a strip above the canvas, so nothing
@@ -118,16 +100,14 @@ export function CanvasToolbar() {
         </button>
       </div>
       <div className="tool-spacer" />
+      {/* Individual panels toggle from their splitter handles or [ ] \ keys. */}
       <div className="tool-group" role="group" aria-label="Panels">
-        <PanelToggle panel="palette" label="Palette" glyph="◧" />
-        <PanelToggle panel="inspector" label="Inspector" glyph="◨" />
-        <PanelToggle panel="metrics" label="Charts" glyph="⬓" />
         <button
           type="button"
           className={`tool tool-focus ${focused ? 'is-on' : ''}`}
           aria-pressed={focused}
           onClick={toggleFocus}
-          title="Focus mode: hide all panels (F)"
+          title="Focus mode: hide all panels (F). Toggle single panels with [ ] and \\"
         >
           <span aria-hidden="true">◉</span>
           <span className="tool-text">Focus</span>

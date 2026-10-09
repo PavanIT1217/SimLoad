@@ -39,6 +39,15 @@ export function TopBar() {
       <Button
         size="sm"
         variant="ghost"
+        onClick={() => useUiStore.getState().setWelcomeOpen(true)}
+        aria-label="About SimLoad"
+        title="What is SimLoad?"
+      >
+        ?
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
         onClick={toggleTheme}
         aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
         title={theme === 'dark' ? 'Lab notebook (light)' : 'Mission control (dark)'}

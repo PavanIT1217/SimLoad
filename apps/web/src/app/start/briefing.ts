@@ -1,30 +1,15 @@
-import type { Design, TickResult } from '@simload/engine';
+import type { TickResult } from '@simload/engine';
 import { readStorage, writeStorage } from '../../features/persistence/storage';
-import { formatRps } from '../../ui/format';
 
 const INTRO_KEY = 'simload:intro-seen';
 
-/** Returning visitors who ticked "don't show again" start at the mission step. */
+/** The welcome card is shown once; after that it only opens from the top bar. */
 export function introSeen(): boolean {
   return readStorage(INTRO_KEY) === '1';
 }
 
-export function setIntroSeen(seen: boolean): void {
-  writeStorage(INTRO_KEY, seen ? '1' : '0');
-}
-
-/** Pre-flight checklist shown before launch, written from the loaded design. */
-export function preflightLines(design: Design): string[] {
-  const parts = design.nodes.filter((n) => n.kind !== 'client');
-  const entry = parts.find((n) => design.edges.some((e) => e.target === n.id));
-  const reads = Math.round(design.traffic.readRatio * 100);
-  return [
-    `Compiling ${parts.length} components and ${design.edges.length} connections`,
-    `Routing ${formatRps(design.traffic.peakRps)} through ${entry?.label ?? 'the entry point'}`,
-    `Mixing traffic: ${reads}% reads, ${100 - reads}% writes`,
-    'Calibrating latency distributions (seed 42)',
-    'Arming telemetry, insights and cost meters',
-  ];
+export function setIntroSeen(): void {
+  writeStorage(INTRO_KEY, '1');
 }
 
 /** Saturation (offered / capacity) at which a component counts as cracked. */

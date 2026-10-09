@@ -23,9 +23,12 @@ export interface UiState {
   toast: string | null;
   rightTab: RightTab;
   dockTab: DockTab;
-  /** Start-up briefing (welcome, mission, launch); null once dismissed. */
+  /** How this visit started (scenario or shared link, and any earlier work to restore). */
   startup: StartupInfo | null;
   setStartup(startup: StartupInfo | null): void;
+  /** Welcome card: shown on the first visit and when reopened from the top bar. */
+  welcomeOpen: boolean;
+  setWelcomeOpen(open: boolean): void;
   /** Node the visitor predicted would break first, checked once the run starts. */
   prediction: string | null;
   setPrediction(nodeId: string | null): void;
@@ -47,6 +50,8 @@ export const useUiStore = create<UiState>()((set, get) => ({
   dockTab: 'live',
   startup: null,
   setStartup: (startup) => set({ startup }),
+  welcomeOpen: false,
+  setWelcomeOpen: (welcomeOpen) => set({ welcomeOpen }),
   prediction: null,
   setPrediction: (prediction) => set({ prediction }),
   setRightTab: (rightTab) => set({ rightTab }),

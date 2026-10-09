@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
+import { introSeen } from './app/start/briefing';
 import { registerServiceWorker } from './features/offline/registerServiceWorker';
 import { bootstrapDesign } from './features/persistence/bootstrap';
 import { useUiStore } from './state/uiStore';
@@ -16,7 +17,11 @@ if (import.meta.env.PROD) registerServiceWorker();
 
 // Resolve the starting design (share link, autosave or a scenario) before the first render.
 void bootstrapDesign()
-  .then((startup) => useUiStore.getState().setStartup(startup))
+  .then((startup) => {
+    const ui = useUiStore.getState();
+    ui.setStartup(startup);
+    ui.setWelcomeOpen(!introSeen());
+  })
   .finally(() => {
     createRoot(root).render(
       <StrictMode>

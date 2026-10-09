@@ -13,7 +13,8 @@ import { useSimStore } from '../state/simStore';
 import { useUiStore } from '../state/uiStore';
 import { PanelSplitter } from './PanelSplitter';
 import { PredictionReveal } from './start/PredictionReveal';
-import { StartOverlay } from './start/StartOverlay';
+import { RestoreNotice } from './start/RestoreNotice';
+import { WelcomeCard } from './start/WelcomeCard';
 import { TelemetryStrip } from './TelemetryStrip';
 import { Toast } from './Toast';
 import { TopBar } from './TopBar';
@@ -72,9 +73,13 @@ export function App() {
       </main>
       <PanelSplitter panel="metrics" />
       {!collapsed.metrics ? <MetricsPanel /> : <div aria-hidden="true" />}
-      <Toast />
+      {/* Bottom-centre stack so the welcome card, notices and toasts never overlap. */}
+      <div className="bottom-stack">
+        <Toast />
+        <RestoreNotice />
+        <WelcomeCard />
+      </div>
       <PredictionReveal />
-      <StartOverlay />
     </div>
   );
 }

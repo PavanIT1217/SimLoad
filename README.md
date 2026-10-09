@@ -89,13 +89,13 @@ latency and capacity).
 - **Flexible workspace:**
   - Resizable, collapsible panels; focus mode with `F`.
   - Zoom, fit and minimap controls sit in a toolbar above the canvas.
-- **Start-up briefing:** a welcome and introduction, then the mission (the URL
-  shortener scenario and its goal). You can predict which component will crack
-  first. Launch runs a pre-flight checklist and a T-minus 3‑2‑1, and the app
-  later tells you whether your prediction was right. Nothing starts until you
-  press Launch. "Explore first" stays paused, and "Restore my last design"
-  brings back your own previous work. Returning visitors can skip the intro.
-  Shared links open their design instead.
+- **Welcome card:** on the first visit, a small card at the bottom says what
+  SimLoad is and what's loaded (the URL shortener and its goal). You can guess
+  which component will break first, and the app tells you later whether you
+  were right. The card doesn't block the design. "Run simulation" starts
+  straight away, and `?` in the top bar brings the card back. Returning
+  visitors aren't interrupted; if they had their own design, a short notice
+  offers to restore it. Shared links open their design instead.
 - Dark ("mission control") theme by default, with a light theme one click away.
 - 100% client-side: no backend, no accounts.
 - **Works offline:** after the first visit a service worker keeps the whole

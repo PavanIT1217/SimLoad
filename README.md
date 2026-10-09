@@ -98,6 +98,11 @@ latency and capacity).
   Shared links open their design instead.
 - Dark ("mission control") theme by default, with a light theme one click away.
 - 100% client-side: no backend, no accounts.
+- **Works offline:** after the first visit a service worker keeps the whole
+  app cached, so SimLoad opens and runs with no internet connection. An
+  "Offline" badge shows when you're disconnected. Online visits always load
+  the latest deploy, and you can install SimLoad as an app from the browser
+  menu.
 
 ### Keyboard shortcuts
 

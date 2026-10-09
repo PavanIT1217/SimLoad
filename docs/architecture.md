@@ -170,3 +170,20 @@ gives byte-identical `TickResult`s; a test checks this.
 `actions/deploy-pages` to https://simload.webappslab.com/. It sets
 `VITE_BASE=/` for the custom domain. Without it, `vite.config.ts` derives
 `/<repo>/` from `GITHUB_REPOSITORY`.
+
+## Offline support
+
+`apps/web/offline/offlinePlugin.ts` is a small Vite plugin. At build time it
+emits `sw.js` from `sw.template.js`, filled in with every file of the build
+(bundles, workers, fonts, icons and the manifest) and a version hash of that
+list. The service worker:
+
+- **Install:** precaches the list, then activates at once and deletes caches
+  from older builds.
+- **Page loads:** network first with a 4 s timeout, so online visits get the
+  latest deploy. It falls back to the cached app shell when offline.
+- **Other requests:** cache first, since Vite puts a content hash in every
+  file name.
+
+`registerServiceWorker` registers it in production builds only. It shows a
+toast on the first install ("Ready offline") and after a background update.

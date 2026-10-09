@@ -1,3 +1,4 @@
+import { OfflineBadge } from '../features/offline/OfflineBadge';
 import { PersistenceMenu } from '../features/persistence/PersistenceMenu';
 import { ScenarioPicker } from '../features/scenarios/ScenarioPicker';
 import { SimulationControls } from '../features/simulation/SimulationControls';
@@ -20,6 +21,7 @@ export function TopBar() {
         <span className="brand-name" title="SimLoad: system design simulator">
           SIM//LOAD
         </span>
+        <OfflineBadge />
       </div>
       <div className="segmented" role="group" aria-label="Mode">
         <Button size="sm" active={mode === 'prep'} onClick={() => setMode('prep')}>

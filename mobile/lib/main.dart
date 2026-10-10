@@ -150,23 +150,36 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            if (controller != null) WebViewWidget(controller: controller),
-            if (_error != null)
-              _ErrorView(message: _error!, onRetry: _retry)
-            else
-              IgnorePointer(
-                ignoring: _loaded,
-                child: AnimatedOpacity(
-                  opacity: _loaded ? 0 : 1,
-                  duration: const Duration(milliseconds: 300),
-                  child: const _Splash(),
+    // Back steps back through pages in the WebView (e.g. from the privacy
+    // policy to the simulator) before leaving the app.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        if (controller != null && await controller.canGoBack()) {
+          await controller.goBack();
+        } else {
+          await SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Stack(
+            children: [
+              if (controller != null) WebViewWidget(controller: controller),
+              if (_error != null)
+                _ErrorView(message: _error!, onRetry: _retry)
+              else
+                IgnorePointer(
+                  ignoring: _loaded,
+                  child: AnimatedOpacity(
+                    opacity: _loaded ? 0 : 1,
+                    duration: const Duration(milliseconds: 300),
+                    child: const _Splash(),
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

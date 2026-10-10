@@ -58,3 +58,21 @@ The tests cover the local server: loopback only, `index.html` with the bridge in
 
 - Android: `res/xml/network_security_config.xml` allows plain HTTP to `127.0.0.1` only. The `INTERNET` permission is needed to open the local socket.
 - iOS: `NSAllowsLocalNetworking` in `Info.plist` does the same.
+
+## Store listing
+
+The website has the pages both stores ask for:
+
+| Store field | URL |
+| --- | --- |
+| Privacy policy (App Store and Google Play) | https://simload.webappslab.com/privacy.html |
+| Support URL (App Store) | https://simload.webappslab.com/support.html |
+| Terms of use (optional) | https://simload.webappslab.com/terms.html |
+| Marketing URL (App Store, optional) | https://simload.webappslab.com/ |
+
+Answers for the privacy forms (Google Play "Data safety", App Store "App Privacy"), which match the privacy policy:
+
+- **Data collected:** none. **Data shared:** none. No account, so no account deletion is needed.
+- **Tracking / ads / analytics:** none.
+- **Android permissions:** `INTERNET` is used only by the app's own server on `127.0.0.1`.
+- **Contact email:** pavan@webappslab.com

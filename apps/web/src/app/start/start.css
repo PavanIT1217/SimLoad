@@ -99,6 +99,18 @@
   font-size: 11px;
   color: var(--text-faint);
 }
+.welcome-legal {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 11px;
+}
+.welcome-legal a {
+  color: var(--text-faint);
+}
+.welcome-legal a:hover {
+  color: var(--accent);
+}
 .restore-notice {
   display: flex;
   align-items: center;

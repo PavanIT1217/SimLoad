@@ -4,7 +4,7 @@ const PRECACHE = __SIMLOAD_PRECACHE__;
 const CACHE = `simload-${VERSION}`;
 const PREFIX = 'simload-';
 const SCOPE = self.registration.scope;
-/** The app shell: what every navigation inside the scope receives. */
+/** The app shell: what navigations inside the scope receive (apart from the static pages). */
 const SHELL = new URL('./', SCOPE).href;
 /** Give up on a slow network for page loads and serve the cached shell. */
 const NAVIGATION_TIMEOUT_MS = 4000;
@@ -49,6 +49,28 @@ async function navigate(request) {
   }
 }
 
+/**
+ * Network first for the static pages next to the app (privacy policy, terms,
+ * support), cached under their own URL so they never replace the app shell.
+ */
+async function page(request) {
+  const cache = await caches.open(CACHE);
+  try {
+    const response = await fetch(request);
+    if (response.ok) await cache.put(request, response.clone());
+    return response;
+  } catch {
+    const cached = await cache.match(request, { ignoreSearch: true });
+    return cached ?? Response.error();
+  }
+}
+
+/** Whether a navigation is for one of those pages rather than the app itself. */
+function isStaticPage(url) {
+  const path = new URL(url).pathname;
+  return path.endsWith('.html') && !path.endsWith('/index.html');
+}
+
 /** Cache first: built files have content hashes in their names, so they never go stale. */
 async function asset(request) {
   const cached = await caches.match(request, { ignoreSearch: true });
@@ -64,5 +86,9 @@ async function asset(request) {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET' || !request.url.startsWith(SCOPE)) return;
-  event.respondWith(request.mode === 'navigate' ? navigate(request) : asset(request));
+  if (request.mode === 'navigate') {
+    event.respondWith(isStaticPage(request.url) ? page(request) : navigate(request));
+  } else {
+    event.respondWith(asset(request));
+  }
 });

@@ -100,6 +100,11 @@ export function WelcomeCard() {
         )}
         <span className="welcome-hint">Reopen anytime with ? in the top bar</span>
       </div>
+      <nav className="welcome-legal" aria-label="About SimLoad">
+        <a href={`${import.meta.env.BASE_URL}support.html`}>Support</a>
+        <a href={`${import.meta.env.BASE_URL}privacy.html`}>Privacy</a>
+        <a href={`${import.meta.env.BASE_URL}terms.html`}>Terms</a>
+      </nav>
     </section>
   );
 }

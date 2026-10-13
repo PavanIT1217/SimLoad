@@ -10,15 +10,19 @@ export interface StaticFile {
   content: string;
 }
 
+/** Support and legal pages (hand-written HTML in public/). */
+export const LEGAL_PAGES = ['/support.html', '/privacy.html', '/terms.html'];
+
 /** Site paths listed in the sitemap, most important first. */
 export function sitemapPaths(): string[] {
-  return ['/', '/scenarios/', ...SCENARIOS.map(scenarioPath), '/about/'];
+  return ['/', '/scenarios/', ...SCENARIOS.map(scenarioPath), '/about/', ...LEGAL_PAGES];
 }
 
 export function renderSitemap(paths: readonly string[], lastmod: string): string {
   const urls = paths
     .map((p) => {
-      const priority = p === '/' ? '1.0' : p === '/scenarios/' ? '0.9' : '0.7';
+      const priority =
+        p === '/' ? '1.0' : p === '/scenarios/' ? '0.9' : LEGAL_PAGES.includes(p) ? '0.3' : '0.7';
       return `  <url><loc>${absolute(p)}</loc><lastmod>${lastmod}</lastmod><priority>${priority}</priority></url>`;
     })
     .join('\n');

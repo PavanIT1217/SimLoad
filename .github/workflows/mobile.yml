@@ -1,0 +1,49 @@
+name: Mobile app
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.7
+          cache: true
+      - name: Bundle the web app
+        run: mobile/tool/build_web.sh
+      - run: flutter pub get
+        working-directory: mobile
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed lib test
+        working-directory: mobile
+      - name: Analyze
+        run: flutter analyze
+        working-directory: mobile
+      - name: Test
+        run: flutter test
+        working-directory: mobile
+      - name: Build APK
+        run: flutter build apk --release
+        working-directory: mobile
+      - uses: actions/upload-artifact@v4
+        with:
+          name: simload-apk
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk

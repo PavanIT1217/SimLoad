@@ -46,7 +46,7 @@ describe('SEO static pages', () => {
   it('lists every indexable page in the sitemap and links it from robots.txt', () => {
     const sitemap = file('sitemap.xml');
     for (const path of sitemapPaths()) expect(sitemap).toContain(`<loc>${SITE_URL}${path}</loc>`);
-    expect(sitemapPaths()).toHaveLength(SCENARIOS.length + 3);
+    expect(sitemapPaths()).toHaveLength(SCENARIOS.length + 6);
     expect(file('robots.txt')).toContain(`Sitemap: ${SITE_URL}/sitemap.xml`);
     expect(file('404.html')).toContain('content="noindex"');
   });

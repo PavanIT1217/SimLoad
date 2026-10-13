@@ -93,7 +93,8 @@ ${meta.body}
       <div class="wrap">
         ${SITE_NAME} is a free, open-source system design simulator that runs entirely in your
         browser. <a href="/">Open the simulator</a> · <a href="/scenarios/">Scenarios</a> ·
-        <a href="/about/">About &amp; FAQ</a>
+        <a href="/about/">About &amp; FAQ</a> · <a href="/support.html">Support</a> ·
+        <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
       </div>
     </footer>
   </body>

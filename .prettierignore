@@ -2,3 +2,6 @@ node_modules
 dist
 coverage
 pnpm-lock.yaml
+
+# Flutter app (formatted with dart format) and its copy of the web build
+mobile

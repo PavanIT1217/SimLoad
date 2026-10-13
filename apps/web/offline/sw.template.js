@@ -4,7 +4,7 @@ const PRECACHE = __SIMLOAD_PRECACHE__;
 const CACHE = `simload-${VERSION}`;
 const PREFIX = 'simload-';
 const SCOPE = self.registration.scope;
-/** The app shell: what every navigation inside the scope receives. */
+/** The app shell: what navigations inside the scope receive (apart from the static pages). */
 const SHELL = new URL('./', SCOPE).href;
 /** Give up on a slow network for page loads and serve the cached shell. */
 const NAVIGATION_TIMEOUT_MS = 4000;
@@ -40,8 +40,9 @@ function isAppShell(url) {
 
 /**
  * Network first, so an online visit always gets the latest deploy. Each page
- * is cached under its own URL (the app under SHELL); offline, a page falls
- * back to its cached copy, then to the app.
+ * (the app, guides, privacy policy, terms, support) is cached under its own
+ * URL, the app under SHELL, so no page ever replaces the app. Offline, a page
+ * falls back to its cached copy, then to the app.
  */
 async function navigate(request) {
   const cache = await caches.open(CACHE);

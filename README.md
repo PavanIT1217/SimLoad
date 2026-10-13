@@ -154,6 +154,18 @@ The site origin comes from `VITE_SITE_URL` (`apps/web/.env`). After
 deploying, submit `https://simload.webappslab.com/sitemap.xml` in Google Search
 Console and Bing Webmaster Tools.
 
+## Mobile app
+
+`mobile/` is a Flutter app for Android and iOS. It bundles the production web
+build and runs it offline in a WebView. Exports, the PDF report, share links
+and imports go through native share, print, clipboard and file pickers. See
+[mobile/README.md](mobile/README.md).
+
+```bash
+mobile/tool/build_web.sh   # bundle the web app into mobile/assets/web
+cd mobile && flutter run
+```
+
 ## Deploying
 
 Every push to `main` runs `.github/workflows/deploy.yml`, which builds the app
@@ -176,6 +188,7 @@ every push and pull request.
 packages/engine   Pure TypeScript simulation engine (no DOM), Vitest tests
 apps/web          Vite + React app (React Flow, Zustand, Recharts, Web Worker)
 docs/             Requirements, architecture and ADRs
+mobile/           Flutter app for Android and iOS (wraps the web build)
 ```
 
 Read more in [docs/architecture.md](docs/architecture.md),

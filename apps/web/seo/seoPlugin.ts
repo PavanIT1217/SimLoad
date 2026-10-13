@@ -8,6 +8,7 @@ import type { StaticFile } from './pages';
  * guides, 404) plus sitemap.xml, robots.txt and llms.txt into the output
  * directory. The pages reuse the app's scenario data, loaded through Vite's
  * SSR module loader so TypeScript and workspace imports resolve as in the app.
+ * Set VITE_STATIC_PAGES=false to skip them (the mobile build does).
  */
 export function seoPlugin(): Plugin {
   let root = '';
@@ -20,6 +21,8 @@ export function seoPlugin(): Plugin {
       outDir = resolve(config.root, config.build.outDir);
     },
     async closeBundle() {
+      // The mobile apps bundle the build without the website-only pages.
+      if (process.env.VITE_STATIC_PAGES === 'false') return;
       const server = await createServer({
         root,
         configFile: resolve(root, 'vite.config.ts'),

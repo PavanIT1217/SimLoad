@@ -134,6 +134,26 @@ pnpm dev          # http://localhost:5173
 | `pnpm preview` | Serve the production build locally                            |
 | `pnpm format`  | Format everything with Prettier                               |
 
+## SEO
+
+The simulator is a single-page app, so the build also produces static,
+crawlable pages from the same scenario data (`apps/web/seo/`):
+
+- **Head:** `index.html` has a canonical URL, a full description, Open Graph
+  and Twitter cards with `og-image.png` (1200×630), and JSON-LD
+  (`WebApplication` and `WebSite`).
+- **Pages:** `/about/` covers features and has an FAQ with `FAQPage` data.
+  `/scenarios/` lists all scenarios, and each scenario has its own guide at
+  `/scenarios/<id>/` (`LearningResource` and `BreadcrumbList` data).
+- **Crawler files:** `sitemap.xml`, `robots.txt`, `llms.txt` and a `noindex`
+  `404.html`.
+- **Deep links:** `/?scenario=<id>` opens the simulator on that scenario. The
+  guide pages and the welcome card link to each other.
+
+The site origin comes from `VITE_SITE_URL` (`apps/web/.env`). After
+deploying, submit `https://simload.webappslab.com/sitemap.xml` in Google Search
+Console and Bing Webmaster Tools.
+
 ## Mobile app
 
 `mobile/` is a Flutter app for Android and iOS. It bundles the production web

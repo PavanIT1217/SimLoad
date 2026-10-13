@@ -8,8 +8,9 @@ root="$(cd "$here/.." && pwd)"
 
 cd "$root"
 pnpm install --frozen-lockfile
-# The app serves the build from the root of a local origin.
-VITE_BASE=/ pnpm --filter @simload/web build
+# The app serves the build from the root of a local origin. The SEO guide
+# pages, sitemap and robots.txt are for the website only, so skip them.
+VITE_BASE=/ VITE_STATIC_PAGES=false pnpm --filter @simload/web build
 
 out="$here/assets/web"
 rm -rf "$out"

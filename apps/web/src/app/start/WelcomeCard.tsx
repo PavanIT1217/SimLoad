@@ -9,6 +9,10 @@ import { Button } from '../../ui/Button';
 import { setIntroSeen } from './briefing';
 import './start.css';
 
+const BASE = import.meta.env.BASE_URL;
+/** The guide pages exist on the website; the mobile build leaves them out. */
+const GUIDES = import.meta.env.VITE_STATIC_PAGES !== 'false';
+
 /**
  * A short, non-blocking welcome: what SimLoad is, what is loaded, and one
  * button to run it. Shown on the first visit only (and from the top bar's
@@ -98,7 +102,19 @@ export function WelcomeCard() {
             Look around first
           </Button>
         )}
-        <span className="welcome-hint">Reopen anytime with ? in the top bar</span>
+        {GUIDES && (
+          <span className="welcome-hint">
+            <a href={`${BASE}about/`}>How it works</a>
+            {scenario && (
+              <>
+                {' · '}
+                <a href={`${BASE}scenarios/${scenario.id}/`}>Scenario brief</a>
+              </>
+            )}
+            {' · '}
+            <a href={`${BASE}scenarios/`}>All scenarios</a>
+          </span>
+        )}
       </div>
       <nav className="welcome-legal" aria-label="About SimLoad">
         <a href={`${import.meta.env.BASE_URL}support.html`}>Support</a>

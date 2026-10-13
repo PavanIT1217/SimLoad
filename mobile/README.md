@@ -4,7 +4,7 @@ A Flutter app that puts the whole SimLoad simulator on your phone, working offli
 
 ## How it works
 
-- `tool/build_web.sh` builds `apps/web` with `VITE_BASE=/` and copies it into `assets/web`, leaving out source maps and the service worker.
+- `tool/build_web.sh` builds `apps/web` with `VITE_BASE=/` and `VITE_STATIC_PAGES=false` (no website-only SEO pages) and copies it into `assets/web`, leaving out source maps and the service worker.
 - At launch, `lib/local_server.dart` serves those files from `http://127.0.0.1` on a fixed port. It listens on loopback only, so nothing leaves the device. A real origin (rather than `file://`) lets the ES modules and the simulation's Web Workers load as they do on the website. A fixed port keeps `localStorage`, and with it the autosaved design, from one launch to the next.
 - `lib/bridge.dart` adds a small script to the page before the app's own code. It passes the things a WebView can't do on its own to native code:
 

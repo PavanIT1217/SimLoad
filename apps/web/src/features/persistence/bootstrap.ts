@@ -24,7 +24,7 @@ const sameDesign = (a: Design, b: Design) =>
 
 /**
  * Picks the initial design. A shared link opens that design; otherwise every
- * visit starts with the URL shortener scenario. The visitor's autosaved work
+ * visit starts with the URL shortener scenario (or the one named by `?scenario=`). The visitor's autosaved work
  * is kept aside (not discarded) and offered as "Restore". The hash is cleared
  * so a reload does not re-import the shared design over local edits.
  */
@@ -42,7 +42,15 @@ export async function bootstrapDesign(): Promise<StartupInfo> {
     ui.showToast('The shared link is invalid or corrupted');
   }
 
-  const scenario = findScenario(DEFAULT_SCENARIO_ID);
+  // Deep links from the scenario guide pages: /?scenario=<id>.
+  const params = new URLSearchParams(window.location.search);
+  const requested = findScenario(params.get('scenario'));
+  if (params.has('scenario')) {
+    params.delete('scenario');
+    const query = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (query ? `?${query}` : ''));
+  }
+  const scenario = requested ?? findScenario(DEFAULT_SCENARIO_ID);
   const saved = loadAutosave();
   const isOwnWork =
     saved !== null &&

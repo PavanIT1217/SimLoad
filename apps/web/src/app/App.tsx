@@ -5,6 +5,7 @@ import { RightPanel } from '../features/inspector/RightPanel';
 import { MetricsPanel } from '../features/metrics/MetricsPanel';
 import { Palette } from '../features/palette/Palette';
 import { useAutosave } from '../features/persistence/useAutosave';
+import { findScenario } from '../features/scenarios';
 import { GoalBanner } from '../features/scenarios/GoalBanner';
 import { useScenarioGoal } from '../features/scenarios/useScenarioGoal';
 import { useSimulationSync } from '../features/simulation/useSimulationSync';
@@ -27,6 +28,7 @@ const PALETTE_RAIL_PX = 52;
 
 export function App() {
   const theme = useUiStore((s) => s.theme);
+  const scenarioId = useUiStore((s) => s.scenarioId);
   const error = useSimStore((s) => s.error);
   const sizes = useLayoutStore((s) => s.sizes);
   const collapsed = useLayoutStore((s) => s.collapsed);
@@ -39,6 +41,14 @@ export function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
+
+  // Tab title names the open scenario (also what search engines see after rendering).
+  useEffect(() => {
+    const scenario = findScenario(scenarioId);
+    document.title = scenario
+      ? `${scenario.name} · SimLoad System Design Simulator`
+      : 'SimLoad · System Design Simulator: 1 to 100M req/s in your browser';
+  }, [scenarioId]);
 
   const layoutVars = {
     '--palette-w': `${collapsed.palette ? PALETTE_RAIL_PX : sizes.palette}px`,

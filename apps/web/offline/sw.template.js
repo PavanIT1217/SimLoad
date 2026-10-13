@@ -31,9 +31,23 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-/** Network first, so an online visit always gets the latest deploy; cache when offline. */
+/** True for the app itself (the scope root), as opposed to static content pages. */
+function isAppShell(url) {
+  const path = new URL(url).pathname;
+  const root = new URL(SCOPE).pathname;
+  return path === root || path === `${root}index.html`;
+}
+
+/**
+ * Network first, so an online visit always gets the latest deploy. Each page
+ * (the app, guides, privacy policy, terms, support) is cached under its own
+ * URL, the app under SHELL, so no page ever replaces the app. Offline, a page
+ * falls back to its cached copy, then to the app.
+ */
 async function navigate(request) {
   const cache = await caches.open(CACHE);
+  const url = new URL(request.url);
+  const key = isAppShell(request.url) ? SHELL : url.origin + url.pathname;
   try {
     const response = await Promise.race([
       fetch(request),
@@ -41,34 +55,12 @@ async function navigate(request) {
         setTimeout(() => reject(new Error('timeout')), NAVIGATION_TIMEOUT_MS),
       ),
     ]);
-    if (response.ok) await cache.put(SHELL, response.clone());
+    if (response.ok) await cache.put(key, response.clone());
     return response;
   } catch {
-    const cached = await cache.match(SHELL, { ignoreSearch: true });
+    const cached = (await cache.match(key)) ?? (await cache.match(SHELL));
     return cached ?? Response.error();
   }
-}
-
-/**
- * Network first for the static pages next to the app (privacy policy, terms,
- * support), cached under their own URL so they never replace the app shell.
- */
-async function page(request) {
-  const cache = await caches.open(CACHE);
-  try {
-    const response = await fetch(request);
-    if (response.ok) await cache.put(request, response.clone());
-    return response;
-  } catch {
-    const cached = await cache.match(request, { ignoreSearch: true });
-    return cached ?? Response.error();
-  }
-}
-
-/** Whether a navigation is for one of those pages rather than the app itself. */
-function isStaticPage(url) {
-  const path = new URL(url).pathname;
-  return path.endsWith('.html') && !path.endsWith('/index.html');
 }
 
 /** Cache first: built files have content hashes in their names, so they never go stale. */
@@ -86,9 +78,5 @@ async function asset(request) {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET' || !request.url.startsWith(SCOPE)) return;
-  if (request.mode === 'navigate') {
-    event.respondWith(isStaticPage(request.url) ? page(request) : navigate(request));
-  } else {
-    event.respondWith(asset(request));
-  }
+  event.respondWith(request.mode === 'navigate' ? navigate(request) : asset(request));
 });

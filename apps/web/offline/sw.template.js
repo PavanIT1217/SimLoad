@@ -31,9 +31,22 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-/** Network first, so an online visit always gets the latest deploy; cache when offline. */
+/** True for the app itself (the scope root), as opposed to static content pages. */
+function isAppShell(url) {
+  const path = new URL(url).pathname;
+  const root = new URL(SCOPE).pathname;
+  return path === root || path === `${root}index.html`;
+}
+
+/**
+ * Network first, so an online visit always gets the latest deploy. Each page
+ * is cached under its own URL (the app under SHELL); offline, a page falls
+ * back to its cached copy, then to the app.
+ */
 async function navigate(request) {
   const cache = await caches.open(CACHE);
+  const url = new URL(request.url);
+  const key = isAppShell(request.url) ? SHELL : url.origin + url.pathname;
   try {
     const response = await Promise.race([
       fetch(request),
@@ -41,10 +54,10 @@ async function navigate(request) {
         setTimeout(() => reject(new Error('timeout')), NAVIGATION_TIMEOUT_MS),
       ),
     ]);
-    if (response.ok) await cache.put(SHELL, response.clone());
+    if (response.ok) await cache.put(key, response.clone());
     return response;
   } catch {
-    const cached = await cache.match(SHELL, { ignoreSearch: true });
+    const cached = (await cache.match(key)) ?? (await cache.match(SHELL));
     return cached ?? Response.error();
   }
 }

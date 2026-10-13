@@ -2,19 +2,117 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimLoad · System Design Simulator: 1 to 100M req/s in your browser</title>
+    <meta
+      name="description"
+      content="Free system design simulator in your browser. Draw an architecture, push traffic from 1 to 100M req/s and watch queues, latency, errors and cloud costs. Practise system design interviews or validate a real architecture."
+    />
+    <meta
+      name="keywords"
+      content="system design simulator, system design interview, architecture simulator, load testing, capacity planning, scalability, queueing, latency, cloud cost estimate"
+    />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="SimLoad" />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
     <meta name="theme-color" content="#04070d" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="application-name" content="SimLoad" />
+    <meta name="apple-mobile-web-app-title" content="SimLoad" />
+
+    <meta property="og:site_name" content="SimLoad" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:title" content="SimLoad · System Design Simulator" />
     <meta
-      name="description"
-      content="Simulate how a system architecture behaves from 1 req/s to 100M req/s, in your browser."
+      property="og:description"
+      content="Draw an architecture, push traffic from 1 to 100M req/s and watch where it breaks. Free, in your browser."
     />
-    <title>SimLoad · System Design Simulator</title>
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="SimLoad: a system design simulator showing a live architecture under load"
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SimLoad · System Design Simulator" />
+    <meta
+      name="twitter:description"
+      content="Draw an architecture, push traffic from 1 to 100M req/s and watch where it breaks. Free, in your browser."
+    />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "%VITE_SITE_URL%/#app",
+            "name": "SimLoad",
+            "alternateName": "SimLoad System Design Simulator",
+            "url": "%VITE_SITE_URL%/",
+            "description": "Free system design simulator in your browser: draw an architecture, push traffic from 1 to 100M req/s and watch queues, latency, errors and cloud costs.",
+            "applicationCategory": "EducationalApplication",
+            "applicationSubCategory": "System design simulator",
+            "operatingSystem": "Any (web browser)",
+            "browserRequirements": "Requires JavaScript and a modern browser",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "image": "%VITE_SITE_URL%/og-image.png",
+            "screenshot": "%VITE_SITE_URL%/og-image.png",
+            "featureList": [
+              "Simulate 1 to 100M requests per second",
+              "Queueing, timeouts, retries, autoscaling and circuit breakers",
+              "Bottleneck insights and capacity planner",
+              "AWS, Azure and Google Cloud cost comparison",
+              "Nine system design interview scenarios",
+              "Calibrate from k6, Gatling and JMeter results",
+              "Works offline"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "%VITE_SITE_URL%/#website",
+            "name": "SimLoad",
+            "url": "%VITE_SITE_URL%/",
+            "inLanguage": "en"
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main
+        style="
+          max-width: 760px;
+          margin: 40px auto;
+          padding: 0 20px;
+          font-family: system-ui, sans-serif;
+          color: #e2e8f0;
+          background: #04070d;
+        "
+      >
+        <h1>SimLoad: system design simulator</h1>
+        <p>
+          SimLoad simulates how a system architecture behaves from 1 to 100 million requests per
+          second, in your browser. Draw clients, CDNs, load balancers, services, caches, queues and
+          databases, then watch queues build, latency climb and costs change. The simulator needs
+          JavaScript.
+        </p>
+        <p>
+          <a href="/scenarios/">System design interview scenarios</a> ·
+          <a href="/about/">About SimLoad and FAQ</a>
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

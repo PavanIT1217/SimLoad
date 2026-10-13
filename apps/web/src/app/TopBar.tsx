@@ -18,9 +18,9 @@ export function TopBar() {
     <header className="topbar">
       <div className="brand">
         <Logo active={running} />
-        <span className="brand-name" title="SimLoad: system design simulator">
-          SIM//LOAD
-        </span>
+        <h1 className="brand-name" title="SimLoad: system design simulator">
+          SIM//LOAD<span className="sr-only"> · system design simulator</span>
+        </h1>
         <OfflineBadge />
       </div>
       <div className="segmented" role="group" aria-label="Mode">

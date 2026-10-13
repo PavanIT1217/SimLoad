@@ -98,7 +98,17 @@ export function WelcomeCard() {
             Look around first
           </Button>
         )}
-        <span className="welcome-hint">Reopen anytime with ? in the top bar</span>
+        <span className="welcome-hint">
+          <a href="/about/">How it works</a>
+          {scenario && (
+            <>
+              {' · '}
+              <a href={`/scenarios/${scenario.id}/`}>Scenario brief</a>
+            </>
+          )}
+          {' · '}
+          <a href="/scenarios/">All scenarios</a>
+        </span>
       </div>
     </section>
   );

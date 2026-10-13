@@ -2,6 +2,7 @@
 import react from '@vitejs/plugin-react';
 import { defaultClientConditions, defaultServerConditions, defineConfig } from 'vite';
 import { offlinePlugin } from './offline/offlinePlugin';
+import { seoPlugin } from './seo/seoPlugin';
 
 /**
  * GitHub Pages serves project sites from /<repo>/. The deploy workflow runs
@@ -23,7 +24,7 @@ const VENDOR_CHUNKS: Record<string, string> = {
 
 export default defineConfig({
   base: basePath(),
-  plugins: [react(), offlinePlugin()],
+  plugins: [react(), offlinePlugin(), seoPlugin()],
   resolve: {
     // Consume the engine's TypeScript sources directly (see its package.json exports).
     conditions: ['source', ...defaultClientConditions],
